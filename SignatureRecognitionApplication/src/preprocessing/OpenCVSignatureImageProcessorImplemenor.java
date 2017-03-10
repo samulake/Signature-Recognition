@@ -43,7 +43,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 
 	private void readImage(String sourcePath) {
-		this.image = Imgcodecs.imread(sourcePath);
+		this.image = Imgcodecs.imread(sourcePath, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
 	}
 
 }
