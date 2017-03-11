@@ -9,6 +9,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
@@ -19,6 +20,7 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
 	@AfterClass
@@ -51,7 +53,11 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 	
 	@Test
 	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		
+		Method testedMethod = testedClass.getClass().getDeclaredMethod("readImage", String.class);
+		testedMethod.setAccessible(true);
+		testedMethod.invoke(testedClass, "./testData/signature.jpg");
+		Mat image = (Mat) testedClass.getImage();
+		System.out.println(image.size());
 	}
 
 }
