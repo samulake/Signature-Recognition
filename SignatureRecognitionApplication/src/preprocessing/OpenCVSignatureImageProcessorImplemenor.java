@@ -1,6 +1,7 @@
 package preprocessing;
 
 import org.opencv.core.Mat;
+import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -17,21 +18,24 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	public final void processImage(String sourcePath) {
 		readImage(sourcePath);
-		eliminateBackground();
 		reduceNoise();
+		eliminateBackground();
 		normalizeSize();
 		thin();
 	}
 
 	private void eliminateBackground() {
-		Mat thresholdedImage = new Mat();
-		Imgproc.threshold(this.image, thresholdedImage, 255*0.75, 255, Imgproc.THRESH_BINARY);
-		this.image = thresholdedImage;
+		Mat temporaryMat = new Mat();
+		Imgproc.threshold(this.image, temporaryMat, 255*0.85, 255, Imgproc.THRESH_BINARY);
+		temporaryMat.copyTo(this.image);
 	}
 
 	private void reduceNoise() {
-		// TODO Auto-generated method stub
-
+		Mat temporaryMat = new Mat();
+		Imgproc.threshold(this.image, temporaryMat, 255*0.85, 255, Imgproc.THRESH_BINARY);
+		temporaryMat.copyTo(this.image);
+		Imgproc.boxFilter(this.image, temporaryMat, -1, new Size(4,4));
+		temporaryMat.copyTo(this.image);
 	}
 
 	private void normalizeSize() {
