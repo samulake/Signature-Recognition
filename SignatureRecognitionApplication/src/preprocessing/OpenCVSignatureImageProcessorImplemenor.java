@@ -2,6 +2,7 @@ package preprocessing;
 
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProcessorImplementor {
 	private Mat image;
@@ -23,8 +24,9 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 
 	private void eliminateBackground() {
-		// TODO Auto-generated method stub
-
+		Mat thresholdedImage = new Mat();
+		Imgproc.threshold(this.image, thresholdedImage, 255*0.75, 255, Imgproc.THRESH_BINARY);
+		this.image = thresholdedImage;
 	}
 
 	private void reduceNoise() {
