@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
@@ -57,7 +58,8 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		testedMethod.setAccessible(true);
 		testedMethod.invoke(testedClass, "./testData/signature.jpg");
 		Mat image = (Mat) testedClass.getImage();
-		System.out.println(image.size());
+		assertNotNull(image);
+		assertTrue(image.channels() == 1);
 	}
 
 }
