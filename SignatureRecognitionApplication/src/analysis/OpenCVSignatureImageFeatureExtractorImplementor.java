@@ -1,6 +1,5 @@
 package analysis;
 
-
 /**
  * @author Eryk
  * @version 1.0
