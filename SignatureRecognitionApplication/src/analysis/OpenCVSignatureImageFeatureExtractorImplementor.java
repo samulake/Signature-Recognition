@@ -2,6 +2,7 @@ package analysis;
 
 import org.opencv.core.Mat;
 
+
 /**
  * @author Eryk
  * @version 1.0
