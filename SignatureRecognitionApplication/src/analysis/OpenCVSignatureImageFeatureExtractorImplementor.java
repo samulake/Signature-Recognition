@@ -40,7 +40,7 @@ public class OpenCVSignatureImageFeatureExtractorImplementor extends SignatureIm
 		
 		for ( int i = 0 ; i < matrices.length ; i++) {
 			n[i] = countBlackPixels(matrices[i]);
-			//System.out.printf("%d - %d\n", i, countBlackPixels(matrices[i]));
+			System.out.printf("%d - %d\n", i, countBlackPixels(matrices[i]));
 		}
 		return n;		
 	}
@@ -82,13 +82,9 @@ public class OpenCVSignatureImageFeatureExtractorImplementor extends SignatureIm
 						
 		for (int j = 0; j < matrix.cols(); j++) {
 			for (int k = 0; k < matrix.rows(); k++) {		
-					pixel = matrix.get(k, j);
-							
-					b = pixel[0] == 0.0 ? true : false;
-					g = pixel[1] == 0.0 ? true : false;
-					r = pixel[2] == 0.0 ? true : false;
-							
-					if (b && g && r)
+					pixel = matrix.get(k, j);							
+					b = pixel[0] == 0.0 ? true : false;		
+					if (b)
 						numberOfBlackPixels++;		
 			}
 		}
