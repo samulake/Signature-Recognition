@@ -1,5 +1,8 @@
 package analysis;
 
+import java.awt.List;
+import java.util.ArrayList;
+
 import org.opencv.core.Mat;
 
 
@@ -35,23 +38,23 @@ public class OpenCVSignatureImageFeatureExtractorImplementor extends SignatureIm
 	}
 	
 	public int [] numberOfBlackPixelsPerRegion (Mat image, int numberOfColumns) {
-		Mat [] matrices = splitMatrix(image, numberOfColumns);
-		int [] n = new int [matrices.length];
 		
-		for ( int i = 0 ; i < matrices.length ; i++) {
-			n[i] = countBlackPixels(matrices[i]);
-			System.out.printf("%d - %d\n", i, countBlackPixels(matrices[i]));
+		ArrayList<Mat> regionList = splitMatrix(image, numberOfColumns);
+		int [] n = new int [regionList.size()];
+		
+		for ( int i = 0 ; i < regionList.size() ; i++) {
+			n[i] = countBlackPixels(regionList.get(i));
+			//System.out.printf("%d - %d\n", i, n[i]);
 		}
 		return n;		
 	}
 	
-	private Mat [] splitMatrix(Mat image, int numberOfColumns) {		
+	private ArrayList<Mat> splitMatrix(Mat image, int numberOfColumns) {		
 		int startColumn, endColumn, startRow, endRow;		
 		int numberOfRows = 2;
-		int numberOfRegions = numberOfRows * numberOfColumns;
 		int columnWidth = image.cols() / numberOfColumns;
 		int rowHeight = image.rows() / 2;				
-		Mat [] matrices = new Mat [numberOfRegions];
+		ArrayList<Mat> regionList = new ArrayList<>();
 				
 		for (int rc = 0; rc < numberOfRows; rc++) {
 			startRow = rc * rowHeight;		    
@@ -65,10 +68,10 @@ public class OpenCVSignatureImageFeatureExtractorImplementor extends SignatureIm
 					endColumn = image.cols();
 				else
 					endColumn = (cc + 1) * columnWidth;				
-				matrices[cc + rc * numberOfColumns] = image.submat(startRow, endRow, startColumn, endColumn);
+				regionList.add(image.submat(startRow, endRow, startColumn, endColumn));
 			}
 		}
-		return matrices;		
+		return regionList;		
 	}
 	
 	private int countBlackPixels(Mat matrix) {
