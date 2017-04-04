@@ -49,22 +49,20 @@ public class OpenCVSignatureImageFeatureExtractorImplementor extends SignatureIm
 		int startColumn, endColumn, startRow, endRow;		
 		int numberOfRows = 2;
 		int numberOfRegions = numberOfRows * numberOfColumns;
-		int imageColumns = image.cols();
-		int imageRows = image.rows();		
-		int columnWidth = imageColumns / numberOfColumns;
-		int rowHeight = imageRows / 2;				
+		int columnWidth = image.cols() / numberOfColumns;
+		int rowHeight = image.rows() / 2;				
 		Mat [] matrices = new Mat [numberOfRegions];
 				
 		for (int rc = 0; rc < numberOfRows; rc++) {
 			startRow = rc * rowHeight;		    
 		    if ( rc == numberOfRows - 1)
-				endRow = imageRows;
+				endRow = image.rows();	
 		    else
 		    	endRow = (rc + 1) * rowHeight;			
 			for (int cc = 0; cc < numberOfColumns; cc++) {				
 				startColumn = cc * columnWidth;				
 				if ( cc == numberOfColumns - 1)
-					endColumn = imageColumns;
+					endColumn = image.cols();
 				else
 					endColumn = (cc + 1) * columnWidth;				
 				matrices[cc + rc * numberOfColumns] = image.submat(startRow, endRow, startColumn, endColumn);
