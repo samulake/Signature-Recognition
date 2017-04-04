@@ -76,8 +76,6 @@ public class OpenCVSignatureImageFeatureExtractorImplementor extends SignatureIm
 	private int countBlackPixels(Mat matrix) {
 		double [] pixel;
 		boolean b = false;
-		boolean g = false;
-		boolean r = false;
 		int numberOfBlackPixels = 0;
 						
 		for (int j = 0; j < matrix.cols(); j++) {
