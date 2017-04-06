@@ -46,10 +46,11 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		fail("Not yet implemented");
 	}
 
-	@Test//(timeout=1000)
+	@Test //(timeout=1500)
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		readImageTest();
 		reduceNoiseTest();
+		normalizeSizeTest();
 		eliminateBackgroundTest();
 	}
 	
@@ -69,9 +70,13 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		testedMethod.setAccessible(true);
 		testedMethod.invoke(testedClass);
 		Mat image = (Mat) testedClass.getImage();
-		Imgcodecs.imwrite("./testData/eliminatedBackgroundImage.jpg", image);
 		assertNotNull(image);
 		assertTrue(image.channels() == 1);
+		for(int i = 0; i < image.rows(); i++)
+			for(int j = 0; j < image.cols(); j++)
+				for(double number: image.get(i, j))
+					assertTrue(number == 255 || number == 0);
+		Imgcodecs.imwrite("./testData/eliminatedBackgroundImage.jpg", image);
 	}
 	
 	public void reduceNoiseTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -79,9 +84,19 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		testedMethod.setAccessible(true);
 		testedMethod.invoke(testedClass);
 		Mat image = (Mat) testedClass.getImage();
-		Imgcodecs.imwrite("./testData/reducedNoiseImage.jpg", image);
 		assertNotNull(image);
 		assertTrue(image.channels() == 1);
+		Imgcodecs.imwrite("./testData/reducedNoiseImage.jpg", image);
 	}
-
+	
+	public void normalizeSizeTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Method testedMethod = testedClass.getClass().getDeclaredMethod("normalizeSize", null);
+		testedMethod.setAccessible(true);
+		testedMethod.invoke(testedClass);
+		Mat image = (Mat) testedClass.getImage();
+		assertNotNull(image);
+		assertTrue(image.channels() == 1);
+		assertTrue(image.rows()==200 && image.cols()==400);
+		Imgcodecs.imwrite("./testData/normalizedSizeImage.jpg", image);
+	}
 }
