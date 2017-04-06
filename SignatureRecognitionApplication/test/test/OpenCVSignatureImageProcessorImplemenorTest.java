@@ -52,6 +52,7 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		reduceNoiseTest();
 		normalizeSizeTest();
 		eliminateBackgroundTest();
+		thinTest();
 	}
 	
 	
@@ -98,5 +99,16 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		assertTrue(image.channels() == 1);
 		assertTrue(image.rows()==200 && image.cols()==400);
 		Imgcodecs.imwrite("./testData/normalizedSizeImage.jpg", image);
+	}
+	
+	public void thinTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Method testedMethod = testedClass.getClass().getDeclaredMethod("thin", null);
+		testedMethod.setAccessible(true);
+		testedMethod.invoke(testedClass);
+		Mat image = (Mat) testedClass.getImage();
+		assertNotNull(image);
+		assertTrue(image.channels() == 1);
+		assertTrue(image.rows()==200 && image.cols()==400);
+		Imgcodecs.imwrite("./testData/thinnedImage.jpg", image);
 	}
 }
