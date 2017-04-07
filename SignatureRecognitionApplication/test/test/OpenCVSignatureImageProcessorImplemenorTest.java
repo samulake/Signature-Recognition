@@ -59,11 +59,11 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Method testedMethod = testedClass.getClass().getDeclaredMethod("readImage", String.class);
 		testedMethod.setAccessible(true);
-		testedMethod.invoke(testedClass, "./testData/image.jpg");
+		testedMethod.invoke(testedClass, "./testData/testImage.jpg");
 		Mat image = (Mat) testedClass.getImage();
 		assertNotNull(image);
 		assertTrue(image.channels() == 1);
-		Imgcodecs.imwrite("./testData/grayImage.jpg", image);
+		Imgcodecs.imwrite("./testData/grayScaleImage.jpg", image);
 	}
 	
 	public void eliminateBackgroundTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -109,6 +109,7 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		assertNotNull(image);
 		assertTrue(image.channels() == 1);
 		assertTrue(image.rows()==200 && image.cols()==400);
+		
 		Imgcodecs.imwrite("./testData/thinnedImage.jpg", image);
 	}
 }

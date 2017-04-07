@@ -8,7 +8,13 @@ import org.opencv.imgproc.Imgproc;
 
 public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProcessorImplementor {
 	private Mat image;
-
+	
+	public OpenCVSignatureImageProcessorImplemenor() {}
+	
+	public OpenCVSignatureImageProcessorImplemenor(Mat image) {
+		this.image = image;
+	}
+	
 	public void finalize() throws Throwable {
 		super.finalize();
 	}
