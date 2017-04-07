@@ -54,20 +54,17 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 				for (int y = 1; y + 1 < image.cols(); y++) {
 					int numberOfWhiteToBlackTransitions = countNumberOfWhiteToBlackTransitionsAroundPixel(x, y);
 					int numberOfBlackNeighbourPixels = countBlackNeighbourPixels(x, y);
-					if (image.get(x, y)[0] == 255 && 2 <= numberOfBlackNeighbourPixels
+					if (image.get(x, y)[0] == 0 && 2 <= numberOfBlackNeighbourPixels
 							&& numberOfBlackNeighbourPixels <= 6 && numberOfWhiteToBlackTransitions == 1
-							&& (atLeastOneWhitePixel(image.get(x - 1, y)[0] , image.get(x, y + 1)[0] , image.get(x, y - 1)[0])
-									|| (countNumberOfWhiteToBlackTransitionsAroundPixel(x - 1, y) != 1))
-							&& (atLeastOneWhitePixel(image.get(x - 1, y)[0] , image.get(x, y + 1)[0], image.get(x + 1, y)[0])
-									|| (countNumberOfWhiteToBlackTransitionsAroundPixel(x, y + 1) != 1))) {
-						
-						this.image.put(x, y, 0);
+							&& atLeastOneWhitePixel(image.get(x - 1, y)[0] , image.get(x, y + 1)[0] , image.get(x, y - 1)[0])	
+							&& atLeastOneWhitePixel(image.get(x - 1, y)[0] , image.get(x, y + 1)[0], image.get(x + 1, y)[0])
+					) {
+						this.image.put(x, y, 255);
 						hasChange = true;
 					}
 				}
 			}
-		} while(i++ < 10);
-			
+		} while(hasChange);
 	}
 	
 	private boolean atLeastOneWhitePixel(double ... values) {
@@ -118,7 +115,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		}
 
 		// p8 p9
-		if (x - 1 >= 0 && y - 1 >= 0 && this.image.get(x, y - 1)[0] == 0 && this.image.get(x - 1, y - 1)[0] == 0) {
+		if (x - 1 >= 0 && y - 1 >= 0 && this.image.get(x, y - 1)[0] == 255 && this.image.get(x - 1, y - 1)[0] == 0) {
 			counter++;
 		}
 
