@@ -17,7 +17,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import preprocessing.OpenCVSignatureImageProcessorImplemenor;
 
 public class OpenCVSignatureImageProcessorImplemenorTest {
-	private OpenCVSignatureImageProcessorImplemenor testedClass = new OpenCVSignatureImageProcessorImplemenor();
+	private OpenCVSignatureImageProcessorImplemenor testedClass;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -46,7 +46,7 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		fail("Not yet implemented");
 	}
 
-	@Test //(timeout=1500)
+	//@Test //(timeout=1500)
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		readImageTest();
 		reduceNoiseTest();
@@ -55,8 +55,9 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		thinTest();
 	}
 	
-	
+	@Test
 	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		testedClass = new OpenCVSignatureImageProcessorImplemenor();
 		Method testedMethod = testedClass.getClass().getDeclaredMethod("readImage", String.class);
 		testedMethod.setAccessible(true);
 		testedMethod.invoke(testedClass, "./testData/testImage.jpg");
