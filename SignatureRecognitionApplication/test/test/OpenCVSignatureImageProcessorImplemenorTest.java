@@ -80,18 +80,21 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		Imgcodecs.imwrite("./testData/reducedNoiseImage.jpg", imageWithReducedNoise);
 	}
 	
+	@Test
 	public void eliminateBackgroundTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Mat image = Imgcodecs.imread("./testData/reducedNoiseImage.jpg", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+		testedClass = new OpenCVSignatureImageProcessorImplemenor(image);
 		Method testedMethod = testedClass.getClass().getDeclaredMethod("eliminateBackground", null);
 		testedMethod.setAccessible(true);
 		testedMethod.invoke(testedClass);
-		Mat image = (Mat) testedClass.getImage();
-		assertNotNull(image);
-		assertTrue(image.channels() == 1);
-		for(int i = 0; i < image.rows(); i++)
-			for(int j = 0; j < image.cols(); j++)
-				for(double number: image.get(i, j))
+		Mat imageWithEliminatedBackground = (Mat) testedClass.getImage();
+		assertNotNull(imageWithEliminatedBackground);
+		assertTrue(imageWithEliminatedBackground.channels() == 1);
+		for(int i = 0; i < imageWithEliminatedBackground.rows(); i++)
+			for(int j = 0; j < imageWithEliminatedBackground.cols(); j++)
+				for(double number: imageWithEliminatedBackground.get(i, j))
 					assertTrue(number == 255 || number == 0);
-		Imgcodecs.imwrite("./testData/eliminatedBackgroundImage.jpg", image);
+		Imgcodecs.imwrite("./testData/eliminatedBackgroundImage.jpg", imageWithEliminatedBackground);
 	}
 	
 	public void normalizeSizeTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {

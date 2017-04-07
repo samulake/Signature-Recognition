@@ -33,7 +33,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void eliminateBackground() {
 		Mat temporaryMat = new Mat();
-		Imgproc.threshold(this.image, temporaryMat, 255 * 0.85, 255, Imgproc.THRESH_BINARY);
+		Imgproc.threshold(this.image, temporaryMat, 255 * 0.50, 255, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
 	}
 
