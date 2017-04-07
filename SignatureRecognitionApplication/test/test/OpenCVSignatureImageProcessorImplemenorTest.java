@@ -97,15 +97,18 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		Imgcodecs.imwrite("./testData/eliminatedBackgroundImage.jpg", imageWithEliminatedBackground);
 	}
 	
+	@Test
 	public void normalizeSizeTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Mat image = Imgcodecs.imread("./testData/eliminatedBackgroundImage.jpg", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+		testedClass = new OpenCVSignatureImageProcessorImplemenor(image);
 		Method testedMethod = testedClass.getClass().getDeclaredMethod("normalizeSize", null);
 		testedMethod.setAccessible(true);
 		testedMethod.invoke(testedClass);
-		Mat image = (Mat) testedClass.getImage();
-		assertNotNull(image);
-		assertTrue(image.channels() == 1);
-		assertTrue(image.rows()==200 && image.cols()==400);
-		Imgcodecs.imwrite("./testData/normalizedSizeImage.jpg", image);
+		Mat imageWithNormalizedSize = (Mat) testedClass.getImage();
+		assertNotNull(imageWithNormalizedSize);
+		assertTrue(imageWithNormalizedSize.channels() == 1);
+		assertTrue(imageWithNormalizedSize.rows()==200 && imageWithNormalizedSize.cols()==400);
+		Imgcodecs.imwrite("./testData/normalizedSizeImage.jpg", imageWithNormalizedSize);
 	}
 	
 	public void thinTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
