@@ -13,6 +13,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 import preprocessing.OpenCVSignatureImageProcessorImplemenor;
 
@@ -46,80 +47,18 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		fail("Not yet implemented");
 	}
 
-	//@Test //(timeout=1500)
+	@Test (timeout=2500)
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		readImageTest();
-		reduceNoiseTest();
-		normalizeSizeTest();
-		eliminateBackgroundTest();
-		thinTest();
-	}
-	
-	@Test
-	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		testedClass = new OpenCVSignatureImageProcessorImplemenor();
-		Method testedMethod = testedClass.getClass().getDeclaredMethod("readImage", String.class);
-		testedMethod.setAccessible(true);
-		testedMethod.invoke(testedClass, "./testData/testImage.jpg");
+		testedClass.processImage("./testData/testImage.jpg");
 		Mat image = (Mat) testedClass.getImage();
 		assertNotNull(image);
 		assertTrue(image.channels() == 1);
-		Imgcodecs.imwrite("./testData/grayScaleImage.jpg", image);
-	}
-	
-	@Test
-	public void reduceNoiseTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Mat image = Imgcodecs.imread("./testData/grayScaleImage.jpg", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
-		testedClass = new OpenCVSignatureImageProcessorImplemenor(image);
-		Method testedMethod = testedClass.getClass().getDeclaredMethod("reduceNoise", null);
-		testedMethod.setAccessible(true);
-		testedMethod.invoke(testedClass);
-		Mat imageWithReducedNoise = (Mat) testedClass.getImage();
-		assertNotNull(image);
-		assertTrue(image.channels() == 1);
-		Imgcodecs.imwrite("./testData/reducedNoiseImage.jpg", imageWithReducedNoise);
-	}
-	
-	@Test
-	public void eliminateBackgroundTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Mat image = Imgcodecs.imread("./testData/reducedNoiseImage.jpg", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
-		testedClass = new OpenCVSignatureImageProcessorImplemenor(image);
-		Method testedMethod = testedClass.getClass().getDeclaredMethod("eliminateBackground", null);
-		testedMethod.setAccessible(true);
-		testedMethod.invoke(testedClass);
-		Mat imageWithEliminatedBackground = (Mat) testedClass.getImage();
-		assertNotNull(imageWithEliminatedBackground);
-		assertTrue(imageWithEliminatedBackground.channels() == 1);
-		for(int i = 0; i < imageWithEliminatedBackground.rows(); i++)
-			for(int j = 0; j < imageWithEliminatedBackground.cols(); j++)
-				for(double number: imageWithEliminatedBackground.get(i, j))
+		for(int i = 0; i < image.rows(); i++)
+			for(int j = 0; j < image.cols(); j++)
+				for(double number: image.get(i, j))
 					assertTrue(number == 255 || number == 0);
-		Imgcodecs.imwrite("./testData/eliminatedBackgroundImage.jpg", imageWithEliminatedBackground);
-	}
-	
-	@Test
-	public void normalizeSizeTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Mat image = Imgcodecs.imread("./testData/eliminatedBackgroundImage.jpg", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
-		testedClass = new OpenCVSignatureImageProcessorImplemenor(image);
-		Method testedMethod = testedClass.getClass().getDeclaredMethod("normalizeSize", int.class, int.class);
-		testedMethod.setAccessible(true);
-		testedMethod.invoke(testedClass, 200, 400);
-		Mat imageWithNormalizedSize = (Mat) testedClass.getImage();
-		assertNotNull(imageWithNormalizedSize);
-		assertTrue(imageWithNormalizedSize.channels() == 1);
-		assertTrue(imageWithNormalizedSize.rows()==200 && imageWithNormalizedSize.cols()==400);
-		Imgcodecs.imwrite("./testData/normalizedSizeImage.jpg", imageWithNormalizedSize);
-	}
-	
-	public void thinTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Method testedMethod = testedClass.getClass().getDeclaredMethod("thin", null);
-		testedMethod.setAccessible(true);
-		testedMethod.invoke(testedClass);
-		Mat image = (Mat) testedClass.getImage();
-		assertNotNull(image);
-		assertTrue(image.channels() == 1);
 		assertTrue(image.rows()==200 && image.cols()==400);
-		
 		Imgcodecs.imwrite("./testData/thinnedImage.jpg", image);
 	}
 }

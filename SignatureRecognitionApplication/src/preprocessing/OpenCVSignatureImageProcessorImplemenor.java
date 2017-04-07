@@ -26,7 +26,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	public final void processImage(String sourcePath) {
 		readImage(sourcePath);
 		reduceNoise();
-		normalizeSize(200, 400);
+		normalizeSize();
 		eliminateBackground();
 		thin();
 	}
@@ -43,15 +43,14 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		temporaryMat.copyTo(this.image);
 	}
 
-	private void normalizeSize(int height, int width) {
+	private void normalizeSize() {
 		Mat temporaryMat = new Mat();
-		Imgproc.resize(this.image, temporaryMat, new Size(width, height));
+		Imgproc.resize(this.image, temporaryMat, new Size(400, 200));
 		temporaryMat.copyTo(this.image);
 	}
 
 	private void thin() {
 		boolean hasChange;
-		int i = 0;
 		do {
 			hasChange = false;
 			for (int x = 1; x + 1 < image.rows(); x++) {
