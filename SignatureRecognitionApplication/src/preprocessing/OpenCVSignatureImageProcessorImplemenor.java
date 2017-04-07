@@ -56,20 +56,21 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 					int numberOfBlackNeighbourPixels = countBlackNeighbourPixels(x, y);
 					if (image.get(x, y)[0] == 0 && 2 <= numberOfBlackNeighbourPixels
 							&& numberOfBlackNeighbourPixels <= 6 && numberOfWhiteToBlackTransitions == 1
-							&& atLeastOneWhitePixel(image.get(x - 1, y)[0] , image.get(x, y + 1)[0] , image.get(x, y - 1)[0])	
-							&& atLeastOneWhitePixel(image.get(x - 1, y)[0] , image.get(x, y + 1)[0], image.get(x + 1, y)[0])
-					) {
+							&& atLeastOneWhitePixel(image.get(x - 1, y)[0], image.get(x, y + 1)[0],
+									image.get(x, y - 1)[0])
+							&& atLeastOneWhitePixel(image.get(x - 1, y)[0], image.get(x, y + 1)[0],
+									image.get(x + 1, y)[0])) {
 						this.image.put(x, y, 255);
 						hasChange = true;
 					}
 				}
 			}
-		} while(hasChange);
+		} while (hasChange);
 	}
-	
-	private boolean atLeastOneWhitePixel(double ... values) {
-		for(double value: values) {
-			if(value == 255) {
+
+	private boolean atLeastOneWhitePixel(double... values) {
+		for (double value : values) {
+			if (value == 255) {
 				return true;
 			}
 		}
@@ -78,82 +79,65 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private int countNumberOfWhiteToBlackTransitionsAroundPixel(int x, int y) {
 		int counter = 0;
-		// p2 p3
-		if (x - 1 >= 0 && y + 1 < image.cols() && image.get(x - 1, y)[0] == 255
-				&& this.image.get(x - 1, y + 1)[0] == 0) {
-			counter++;
-		}
 
-		// p3 p4
-		if (x - 1 >= 0 && y + 1 < image.cols() && this.image.get(x - 1, y + 1)[0] == 255
-				&& this.image.get(x, y + 1)[0] == 0) {
+		if (isZeroToOneTransition(image.get(x - 1, y)[0], this.image.get(x - 1, y + 1)[0]))
 			counter++;
-		}
 
-		// p4 p5
-		if (x + 1 < this.image.rows() && y + 1 < this.image.cols() && this.image.get(x, y + 1)[0] == 255
-				&& this.image.get(x + 1, y + 1)[0] == 0) {
+		if (isZeroToOneTransition(this.image.get(x - 1, y + 1)[0], this.image.get(x, y + 1)[0]))
 			counter++;
-		}
 
-		// p5 p6
-		if (x + 1 < this.image.rows() && y + 1 < this.image.cols() && this.image.get(x + 1, y + 1)[0] == 255
-				&& this.image.get(x + 1, y)[0] == 0) {
+		if (isZeroToOneTransition(this.image.get(x, y + 1)[0], this.image.get(x + 1, y + 1)[0]))
 			counter++;
-		}
 
-		// p6 p7
-		if (x + 1 < this.image.rows() && y - 1 >= 0 && this.image.get(x + 1, y)[0] == 255
-				&& this.image.get(x + 1, y - 1)[0] == 0) {
+		if (isZeroToOneTransition(this.image.get(x + 1, y + 1)[0], this.image.get(x + 1, y)[0]))
 			counter++;
-		}
 
-		// p7 p8
-		if (x + 1 < this.image.rows() && y - 1 >= 0 && this.image.get(x + 1, y - 1)[0] == 255
-				&& this.image.get(x, y - 1)[0] == 0) {
+		if (isZeroToOneTransition(this.image.get(x + 1, y)[0], this.image.get(x + 1, y - 1)[0]))
 			counter++;
-		}
 
-		// p8 p9
-		if (x - 1 >= 0 && y - 1 >= 0 && this.image.get(x, y - 1)[0] == 255 && this.image.get(x - 1, y - 1)[0] == 0) {
+		if (isZeroToOneTransition(this.image.get(x + 1, y - 1)[0], this.image.get(x, y - 1)[0]))
 			counter++;
-		}
 
-		// p9 p2
-		if (x - 1 >= 0 && y - 1 >= 0 && this.image.get(x - 1,y - 1)[0] == 255 && this.image.get(x - 1,y)[0] == 0) {
+		if (isZeroToOneTransition(this.image.get(x, y - 1)[0], this.image.get(x - 1, y - 1)[0]))
 			counter++;
-		}
-		
+
+		if (isZeroToOneTransition(this.image.get(x - 1, y - 1)[0], this.image.get(x - 1, y)[0]))
+			counter++;
+
 		return counter;
+	}
+
+	private boolean isZeroToOneTransition(double pixel, double nextNeighbour) {
+		return pixel == 255 && nextNeighbour == 0;
 	}
 
 	private int countBlackNeighbourPixels(int x, int y) {
 		int counter = 0;
-		if(isBlack(this.image.get(x - 1,y)[0])) {
+		if (isBlack(this.image.get(x - 1, y)[0])) {
 			counter++;
 		}
-		if(isBlack(this.image.get(x - 1,y + 1)[0])) {
+		if (isBlack(this.image.get(x - 1, y + 1)[0])) {
 			counter++;
 		}
-		if(isBlack(this.image.get(x + 1,y + 1)[0])) {
+		if (isBlack(this.image.get(x + 1, y + 1)[0])) {
 			counter++;
 		}
-		if(isBlack(this.image.get(x + 1,y)[0])) {
+		if (isBlack(this.image.get(x + 1, y)[0])) {
 			counter++;
 		}
-		if(isBlack(this.image.get(x + 1,y - 1)[0])) {
+		if (isBlack(this.image.get(x + 1, y - 1)[0])) {
 			counter++;
 		}
-		if(isBlack(this.image.get(x,y - 1)[0])) {
+		if (isBlack(this.image.get(x, y - 1)[0])) {
 			counter++;
 		}
-		if(isBlack(this.image.get(x - 1,y - 1)[0])) {
+		if (isBlack(this.image.get(x - 1, y - 1)[0])) {
 			counter++;
 		}
-		
+
 		return counter;
 	}
-	
+
 	private boolean isBlack(double pixelValue) {
 		return pixelValue == 0;
 	}
@@ -161,5 +145,4 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	private void readImage(String sourcePath) {
 		this.image = Imgcodecs.imread(sourcePath, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
 	}
-
 }
