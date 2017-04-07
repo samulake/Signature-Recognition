@@ -39,7 +39,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void reduceNoise() {
 		Mat temporaryMat = new Mat();
-		Imgproc.boxFilter(this.image, temporaryMat, -1, new Size(4, 4));
+		Imgproc.boxFilter(this.image, temporaryMat, -1, new Size(2, 2));
 		temporaryMat.copyTo(this.image);
 	}
 
