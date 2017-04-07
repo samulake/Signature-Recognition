@@ -67,6 +67,19 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		Imgcodecs.imwrite("./testData/grayScaleImage.jpg", image);
 	}
 	
+	@Test
+	public void reduceNoiseTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Mat image = Imgcodecs.imread("./testData/grayScaleImage.jpg", Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+		testedClass = new OpenCVSignatureImageProcessorImplemenor(image);
+		Method testedMethod = testedClass.getClass().getDeclaredMethod("reduceNoise", null);
+		testedMethod.setAccessible(true);
+		testedMethod.invoke(testedClass);
+		Mat imageWithReducedNoise = (Mat) testedClass.getImage();
+		assertNotNull(image);
+		assertTrue(image.channels() == 1);
+		Imgcodecs.imwrite("./testData/reducedNoiseImage.jpg", imageWithReducedNoise);
+	}
+	
 	public void eliminateBackgroundTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Method testedMethod = testedClass.getClass().getDeclaredMethod("eliminateBackground", null);
 		testedMethod.setAccessible(true);
@@ -79,16 +92,6 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 				for(double number: image.get(i, j))
 					assertTrue(number == 255 || number == 0);
 		Imgcodecs.imwrite("./testData/eliminatedBackgroundImage.jpg", image);
-	}
-	
-	public void reduceNoiseTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Method testedMethod = testedClass.getClass().getDeclaredMethod("reduceNoise", null);
-		testedMethod.setAccessible(true);
-		testedMethod.invoke(testedClass);
-		Mat image = (Mat) testedClass.getImage();
-		assertNotNull(image);
-		assertTrue(image.channels() == 1);
-		Imgcodecs.imwrite("./testData/reducedNoiseImage.jpg", image);
 	}
 	
 	public void normalizeSizeTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
