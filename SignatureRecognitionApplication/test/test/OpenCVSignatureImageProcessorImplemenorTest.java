@@ -47,7 +47,7 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 		fail("Not yet implemented");
 	}
 
-	@Test (timeout=2500)
+	@Test //(timeout=2500)
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		testedClass = new OpenCVSignatureImageProcessorImplemenor();
 		testedClass.processImage("./testData/testImage.jpg");
@@ -58,7 +58,7 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 			for(int j = 0; j < image.cols(); j++)
 				for(double number: image.get(i, j))
 					assertTrue(number == 255 || number == 0);
-		assertTrue(image.rows()==200 && image.cols()==400);
+		assertTrue(image.rows()==150 && image.cols()==300);
 		Imgcodecs.imwrite("./testData/thinnedImage.jpg", image);
 	}
 }
