@@ -33,9 +33,27 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void eliminateBackground() {
 		Mat temporaryMat = new Mat();
-		Imgproc.threshold(this.image, temporaryMat, 255 * 0.50, 255, Imgproc.THRESH_BINARY);
+		double threshold = countThresholdBasedOnBrightnessGradient();
+		Imgproc.threshold(this.image, temporaryMat, threshold, 255, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
 		Imgcodecs.imwrite("./testData/eliminatedBackground.jpg", this.image);
+	}
+
+	private double countThresholdBasedOnBrightnessGradient() {
+		double threshold = 0;
+		double gradientSum = 0;
+		double brightnessSumMultipliedWithGradient = 0;
+		for (int x = 1; x + 1 < image.rows(); x++) {
+			for (int y = 1; y + 1 < image.cols(); y++) {
+				double gradientX = Math.abs(image.get(x+1, y)[0])-Math.abs(image.get(x-1, y)[0]);
+				double gradientY = Math.abs(image.get(x, y+1)[0]) - Math.abs(image.get(x, y-1)[0]);
+				double gradient = Math.max(gradientX, gradientY);
+				gradientSum += gradient;
+				brightnessSumMultipliedWithGradient += image.get(x, y)[0] * gradient;
+			}
+		}
+		threshold = brightnessSumMultipliedWithGradient / gradientSum;
+		return threshold;
 	}
 
 	private void reduceNoise() {
