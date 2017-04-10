@@ -24,6 +24,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 
 	public final void processImage(String sourcePath) {
+		
 		readImage(sourcePath);
 		reduceNoise();
 		eliminateBackground();
@@ -124,8 +125,10 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void reduceNoise() {
 		Mat temporaryMat = new Mat();
-		Imgproc.GaussianBlur(this.image, temporaryMat, new Size(3, 3), 1);
+		/*Imgproc.GaussianBlur(this.image, temporaryMat, new Size(1,1), 3);*/
+		Imgproc.bilateralFilter(this.image, temporaryMat, -1, 12, 6);
 		temporaryMat.copyTo(this.image);
+		this.image.convertTo(this.image, -1, 1.055, 0);
 		Imgcodecs.imwrite("./testData/reducedNoise.jpg", this.image);
 	}
 
@@ -234,6 +237,11 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void readImage(String sourcePath) {
 		this.image = Imgcodecs.imread(sourcePath, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+		while (this.image.height() > 500 || this.image.width() > 500) {
+			Mat temporaryMat = new Mat();		
+			Imgproc.resize(this.image, temporaryMat, new Size(this.image.width()/2, this.image.height()/2));
+			temporaryMat.copyTo(this.image);
+		}
 		Imgcodecs.imwrite("./testData/grayScale.jpg", this.image);
 	}
 }
