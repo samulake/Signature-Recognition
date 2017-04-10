@@ -37,8 +37,73 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		double threshold = countThresholdBasedOnBrightnessGradient();
 		Imgproc.threshold(this.image, temporaryMat, threshold, 255, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
+		smoothBinaryImage();
 		Imgcodecs.imwrite("./testData/eliminatedBackground.jpg", this.image);
 	}
+	
+	private void smoothBinaryImage() {
+		boolean hasChange;
+        int filterValue = 0;
+        do {
+            hasChange = false;
+            for (int x = image.rows()-2; x > 0; x--) {
+    			for (int y = image.cols()-2; y > 0; y--) {
+    				hasChange = hasChange || smoothPoint(x, y, filterValue);
+    			}
+    		} 
+            filterValue++;
+            filterValue = filterValue % 4;
+        } while (hasChange);
+	}
+
+	private boolean smoothPoint(int x, int y, int filterValue) {
+		if (filterValue == 0
+                && this.image.get(x, y - 1)[0] == this.image.get(x - 1, y - 1)[0]
+                && this.image.get(x - 1, y - 1)[0] == this.image.get(x - 1, y)[0]
+                && this.image.get(x - 1, y)[0] == this.image.get(x - 1, y + 1)[0]
+                && this.image.get(x - 1, y + 1)[0] == this.image.get(x, y + 1)[0]
+                && this.image.get(x, y)[0] != this.image.get(x, y - 1)[0]) {
+ 
+            this.image.put(x, y, this.image.get(x, y - 1)[0]);
+            return true;
+        }
+ 
+        if (filterValue == 1
+                && this.image.get(x - 1, y)[0] == this.image.get(x - 1, y + 1)[0]
+                && this.image.get(x - 1, y + 1)[0] == this.image.get(x, y + 1)[0]
+                && this.image.get(x, y + 1)[0] == this.image.get(x + 1, y + 1)[0]
+                && this.image.get(x + 1, y + 1)[0] == this.image.get(x + 1, y)[0]
+                && this.image.get(x, y)[0] != this.image.get(x - 1, y)[0]) {
+ 
+        	this.image.put(x, y, this.image.get(x - 1, y));
+            return true;
+        }
+ 
+        if (filterValue == 2
+                && this.image.get(x, y + 1)[0] == this.image.get(x + 1, y + 1)[0]
+                && this.image.get(x + 1, y + 1)[0] == this.image.get(x + 1, y)[0]
+                && this.image.get(x + 1, y)[0] == this.image.get(x + 1, y - 1)[0]
+                && this.image.get(x + 1, y - 1)[0] == this.image.get(x, y - 1)[0]
+                && this.image.get(x, y)[0] != this.image.get(x, y + 1)[0]) {
+ 
+        	this.image.put(x, y, this.image.get(x, y + 1));
+            return true;
+        }
+ 
+        if (filterValue == 3
+                && this.image.get(x + 1, y)[0] == this.image.get(x + 1, y - 1)[0]
+                && this.image.get(x + 1, y - 1)[0] == this.image.get(x, y - 1)[0]
+                && this.image.get(x, y - 1)[0] == this.image.get(x - 1, y - 1)[0]
+                && this.image.get(x - 1, y - 1)[0] == this.image.get(x - 1, y)[0]
+                && this.image.get(x, y)[0] != this.image.get(x + 1, y)[0]) {
+ 
+        	this.image.put(x, y, this.image.get(x+1, y));
+            return true;
+        }
+ 
+        return false;
+	}
+
 
 	private double countThresholdBasedOnBrightnessGradient() {
 		double threshold = 0;
