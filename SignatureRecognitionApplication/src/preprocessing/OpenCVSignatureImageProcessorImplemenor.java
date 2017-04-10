@@ -36,7 +36,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	private void eliminateBackground() {
 		Mat temporaryMat = new Mat();
 		double threshold = countThresholdBasedOnBrightnessGradient();
-		Imgproc.threshold(this.image, temporaryMat, threshold, 255, Imgproc.THRESH_BINARY);
+		Imgproc.threshold(this.image, temporaryMat, threshold*1.2, 255, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
 		smoothBinaryImage();
 		Imgcodecs.imwrite("./testData/eliminatedBackground.jpg", this.image);
@@ -120,10 +120,17 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void reduceNoise() {
 		Mat temporaryMat = new Mat();
-		/* Imgproc.GaussianBlur(this.image, temporaryMat, new Size(1,1), 3); */
-		Imgproc.bilateralFilter(this.image, temporaryMat, -1, 12, 6);
+		
+		/*Imgproc.GaussianBlur(this.image, temporaryMat, new Size(1,1), 3);
+		temporaryMat.copyTo(this.image);*/
+		
+		double sigmaColor = 4 * this.image.width() / this.image.height();
+		double sigmaSpace = sigmaColor / 2;
+		Imgproc.bilateralFilter(this.image, temporaryMat, -1, 45, 30);
 		temporaryMat.copyTo(this.image);
-		this.image.convertTo(this.image, -1, 1.055, 0);
+		
+		/*Imgproc.boxFilter(this.image, temporaryMat, -1, new Size(1,1));
+		temporaryMat.copyTo(this.image);*/
 		Imgcodecs.imwrite("./testData/reducedNoise.jpg", this.image);
 	}
 
