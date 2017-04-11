@@ -26,19 +26,17 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	public final void processImage(String sourcePath) {
 		readImage(sourcePath);
-		reduceNoise();
-		eliminateBackground();
+		eliminateBackground(countThresholdBasedOnBrightnessGradient());
+		reduceNoise(new Size(1,1));
 		normalizeSize(100);
-		eliminateBackground();
+		smoothBinaryImage();
 		thin();
 	}
 
-	private void eliminateBackground() {
+	private void eliminateBackground(double threshold) {
 		Mat temporaryMat = new Mat();
-		double threshold = countThresholdBasedOnBrightnessGradient();
-		Imgproc.threshold(this.image, temporaryMat, threshold*1.2, 255, Imgproc.THRESH_BINARY);
+		Imgproc.threshold(this.image, temporaryMat, threshold, 256, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
-		smoothBinaryImage();
 		Imgcodecs.imwrite("./testData/eliminatedBackground.jpg", this.image);
 	}
 
@@ -118,19 +116,10 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		return threshold;
 	}
 
-	private void reduceNoise() {
+	private void reduceNoise(Size kernelSize) {
 		Mat temporaryMat = new Mat();
-		
-		/*Imgproc.GaussianBlur(this.image, temporaryMat, new Size(1,1), 3);
-		temporaryMat.copyTo(this.image);*/
-		
-		double sigmaColor = 4 * this.image.width() / this.image.height();
-		double sigmaSpace = sigmaColor / 2;
-		Imgproc.bilateralFilter(this.image, temporaryMat, -1, 45, 30);
+		Imgproc.boxFilter(this.image, temporaryMat, -1, kernelSize);
 		temporaryMat.copyTo(this.image);
-		
-		/*Imgproc.boxFilter(this.image, temporaryMat, -1, new Size(1,1));
-		temporaryMat.copyTo(this.image);*/
 		Imgcodecs.imwrite("./testData/reducedNoise.jpg", this.image);
 	}
 
@@ -145,6 +134,8 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		double widthToHeightRatio = (double) this.image.width() / this.image.height();
 		
 		Imgproc.resize(this.image, temporaryMat, new Size(width*widthToHeightRatio, width));
+		temporaryMat.copyTo(this.image);
+		Imgproc.threshold(this.image, temporaryMat, 0.2*255, 256, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
 		Imgcodecs.imwrite("./testData/nozmalizedSize.jpg", this.image);
 	}
