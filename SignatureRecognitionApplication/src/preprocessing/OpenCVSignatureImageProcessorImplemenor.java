@@ -40,15 +40,12 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 
 	private void blurImage() {
-		Imgproc.bilateralFilter(this.image, temporaryMat, -1,30, 4);
-		temporaryMat.copyTo(this.image);
+		doBilateralFilter(-1,30, 4);
 		Imgcodecs.imwrite("./testData/blurred.jpg", this.image);
-		
 	}
 
 	private void eliminateBackground(double threshold) {
-		Imgproc.threshold(this.image, temporaryMat, threshold, 256, Imgproc.THRESH_BINARY);
-		temporaryMat.copyTo(this.image);
+		doThresholdingBasedOnPixelBrightnessGradients();
 		Imgcodecs.imwrite("./testData/eliminatedBackground.jpg", this.image);
 	}
 
@@ -112,7 +109,6 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 
 	private double countThresholdBasedOnBrightnessGradient() {
-		double threshold = 0;
 		double gradientSum = 0;
 		double brightnessSumMultipliedWithGradient = 0;
 		for (int x = 1; x + 1 < image.rows(); x++) {
@@ -124,8 +120,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 				brightnessSumMultipliedWithGradient += image.get(x, y)[0] * gradient;
 			}
 		}
-		threshold = brightnessSumMultipliedWithGradient / gradientSum;
-		return threshold;
+		return brightnessSumMultipliedWithGradient / gradientSum;
 	}
 
 	private void reduceNoise() {	
