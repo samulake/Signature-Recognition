@@ -10,12 +10,15 @@ import org.opencv.imgproc.Imgproc;
 
 public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProcessorImplementor {
 	private Mat image;
+	private Mat temporaryMat;
 
 	public OpenCVSignatureImageProcessorImplemenor() {
+		temporaryMat = new Mat();
 	}
 
 	public OpenCVSignatureImageProcessorImplemenor(Mat image) {
 		this.image = image;
+		temporaryMat = new Mat();
 	}
 
 	public void finalize() throws Throwable {
@@ -30,14 +33,13 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		readImage(sourcePath);
 		blurImage();
 		eliminateBackground(countThresholdBasedOnBrightnessGradient());
-		reduceNoise(new Size(2,2));
+		reduceNoise();
 		smoothBinaryImage();
 		normalizeSize(128);
 		thin();
 	}
 
 	private void blurImage() {
-		Mat temporaryMat = new Mat();
 		Imgproc.bilateralFilter(this.image, temporaryMat, -1,30, 4);
 		temporaryMat.copyTo(this.image);
 		Imgcodecs.imwrite("./testData/blurred.jpg", this.image);
@@ -45,7 +47,6 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 
 	private void eliminateBackground(double threshold) {
-		Mat temporaryMat = new Mat();
 		Imgproc.threshold(this.image, temporaryMat, threshold, 256, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
 		Imgcodecs.imwrite("./testData/eliminatedBackground.jpg", this.image);
@@ -127,14 +128,20 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		return threshold;
 	}
 
-	private void reduceNoise(Size kernelSize) {
-		Mat temporaryMat = new Mat();
-		
-		Imgproc.bilateralFilter(this.image, temporaryMat, -1,3, 4);
-		temporaryMat.copyTo(this.image);
-		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
-		temporaryMat.copyTo(this.image);		
+	private void reduceNoise() {	
+		doBilateralFilter(-1, 3, 4);
+		doThresholdingBasedOnPixelBrightnessGradients();
 		Imgcodecs.imwrite("./testData/reducedNoise.jpg", this.image);
+	}
+	
+	private void doBilateralFilter(int diameter, double sigmaColor, double sigmaSpace) {
+		Imgproc.bilateralFilter(this.image, temporaryMat, diameter,sigmaColor, sigmaSpace);
+		temporaryMat.copyTo(this.image);
+	}
+	
+	private void doThresholdingBasedOnPixelBrightnessGradients() {
+		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
+		temporaryMat.copyTo(this.image);
 	}
 
 	private void normalizeSize(int width) {
