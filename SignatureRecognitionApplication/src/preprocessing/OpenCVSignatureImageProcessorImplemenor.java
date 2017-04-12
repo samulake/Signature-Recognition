@@ -139,13 +139,27 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		temporaryMat.copyTo(this.image);
 	}
 
-	private void normalizeSize(int width) {
-		Mat temporaryMat = new Mat();
+	private void normalizeSize(int height) {
 		int rowStart = searchFirstRowWithAtLeastOneBlackPixel()-5;
 		int rowEnd = searchLastRowWithAtLeastOneBlackPixel()+5;
 		int columnStart = searchFirstColumnWithAtLeastOneBlackPixel()-5;
 		int columnEnd = searchLastColumnWithAtLeastOneBlackPixel()+5;
 
+		validateSubmatParameters(rowStart, rowEnd, columnStart, columnEnd);
+		
+		this.image = this.image.submat(rowStart, rowEnd, columnStart, columnEnd);
+		double widthToHeightRatio = (double) this.image.width() / this.image.height();
+		
+		Imgproc.resize(this.image, temporaryMat, new Size(height*widthToHeightRatio, height));
+		temporaryMat.copyTo(this.image);
+		
+		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
+		temporaryMat.copyTo(this.image);
+		
+		Imgcodecs.imwrite("./testData/nozmalizedSize.jpg", this.image);
+	}
+	
+	private void validateSubmatParameters(int rowStart, int rowEnd, int columnStart, int columnEnd) {
 		if(rowStart < 0) {
 			rowStart = 0;
 		}
@@ -158,15 +172,6 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		if(columnEnd > this.image.cols()) {
 			columnEnd = this.image.cols()-1;
 		}
-		
-		this.image = this.image.submat(rowStart, rowEnd, columnStart, columnEnd);
-		double widthToHeightRatio = (double) this.image.width() / this.image.height();
-		
-		Imgproc.resize(this.image, temporaryMat, new Size(width*widthToHeightRatio, width));
-		temporaryMat.copyTo(this.image);
-		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
-		temporaryMat.copyTo(this.image);
-		Imgcodecs.imwrite("./testData/nozmalizedSize.jpg", this.image);
 	}
 
 	private int searchFirstColumnWithAtLeastOneBlackPixel() {
