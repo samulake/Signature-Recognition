@@ -1,7 +1,9 @@
 package preprocessing;
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -28,7 +30,6 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		readImage(sourcePath);
 		blurImage();
 		eliminateBackground(countThresholdBasedOnBrightnessGradient());
-		smoothBinaryImage();
 		reduceNoise(new Size(2,2));
 		smoothBinaryImage();
 		normalizeSize(128);
@@ -37,7 +38,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void blurImage() {
 		Mat temporaryMat = new Mat();
-		Imgproc.bilateralFilter(this.image, temporaryMat, -1,30, 7);
+		Imgproc.bilateralFilter(this.image, temporaryMat, -1,30, 4);
 		temporaryMat.copyTo(this.image);
 		Imgcodecs.imwrite("./testData/blurred.jpg", this.image);
 		
@@ -129,7 +130,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	private void reduceNoise(Size kernelSize) {
 		Mat temporaryMat = new Mat();
 		
-		Imgproc.bilateralFilter(this.image, temporaryMat, -1,12, 2);
+		Imgproc.bilateralFilter(this.image, temporaryMat, -1,3, 4);
 		temporaryMat.copyTo(this.image);
 		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);		
@@ -138,10 +139,23 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void normalizeSize(int width) {
 		Mat temporaryMat = new Mat();
-		int rowStart = searchFirstRowWithAtLeastOneBlackPixel();
-		int rowEnd = searchLastRowWithAtLeastOneBlackPixel();
-		int columnStart = searchFirstColumnWithAtLeastOneBlackPixel();
-		int columnEnd = searchLastColumnWithAtLeastOneBlackPixel();
+		int rowStart = searchFirstRowWithAtLeastOneBlackPixel()-5;
+		int rowEnd = searchLastRowWithAtLeastOneBlackPixel()+5;
+		int columnStart = searchFirstColumnWithAtLeastOneBlackPixel()-5;
+		int columnEnd = searchLastColumnWithAtLeastOneBlackPixel()+5;
+
+		if(rowStart < 0) {
+			rowStart = 0;
+		}
+		if(rowEnd > this.image.rows()) {
+			rowEnd = this.image.rows()-1;
+		}
+		if(columnStart < 0) {
+			columnStart = 0;
+		}
+		if(columnEnd > this.image.cols()) {
+			columnEnd = this.image.cols()-1;
+		}
 		
 		this.image = this.image.submat(rowStart, rowEnd, columnStart, columnEnd);
 		double widthToHeightRatio = (double) this.image.width() / this.image.height();
@@ -218,6 +232,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 				}
 			}
 		} while (hasChange);
+
 		Imgcodecs.imwrite("./testData/thinnedImage.jpg", image);
 	}
 
