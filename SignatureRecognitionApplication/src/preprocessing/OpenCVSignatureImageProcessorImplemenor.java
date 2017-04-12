@@ -243,9 +243,9 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		Imgcodecs.imwrite("./testData/thinnedImage.jpg", image);
 	}
 
-	private boolean atLeastOneWhitePixel(double... values) {
-		for (double value : values) {
-			if (value == 255) {
+	private boolean atLeastOneWhitePixel(double... pixels) {
+		for (double pixel : pixels) {
+			if (pixel == 255) {
 				return true;
 			}
 		}
@@ -319,11 +319,16 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void readImage(String sourcePath) {
 		this.image = Imgcodecs.imread(sourcePath, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+		reduceImageTwiceIfSizeIsOver(500, 500);
+		Imgcodecs.imwrite("./testData/grayScale.jpg", this.image);
+	}
+	
+	private void reduceImageTwiceIfSizeIsOver(int allowedMaxHeight, int allowedMaxwidth) {
 		while (this.image.height() > 500 || this.image.width() > 500) {
-			Mat temporaryMat = new Mat();
 			Imgproc.resize(this.image, temporaryMat, new Size(this.image.width() / 2, this.image.height() / 2));
 			temporaryMat.copyTo(this.image);
 		}
-		Imgcodecs.imwrite("./testData/grayScale.jpg", this.image);
 	}
+	
+	
 }
