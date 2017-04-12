@@ -58,6 +58,6 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 			for(int j = 0; j < image.cols(); j++)
 				for(double number: image.get(i, j))
 					assertTrue(number == 255 || number == 0);
-		assertTrue(image.height() == 100);
+		assertTrue(image.height() == 128);
 	}
 }

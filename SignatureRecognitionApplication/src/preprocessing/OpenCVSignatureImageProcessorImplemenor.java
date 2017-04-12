@@ -26,11 +26,21 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	public final void processImage(String sourcePath) {
 		readImage(sourcePath);
+		blurImage();
 		eliminateBackground(countThresholdBasedOnBrightnessGradient());
-		reduceNoise(new Size(1,1));
-		normalizeSize(100);
 		smoothBinaryImage();
+		reduceNoise(new Size(2,2));
+		smoothBinaryImage();
+		normalizeSize(128);
 		thin();
+	}
+
+	private void blurImage() {
+		Mat temporaryMat = new Mat();
+		Imgproc.bilateralFilter(this.image, temporaryMat, -1,30, 7);
+		temporaryMat.copyTo(this.image);
+		Imgcodecs.imwrite("./testData/blurred.jpg", this.image);
+		
 	}
 
 	private void eliminateBackground(double threshold) {
@@ -118,8 +128,11 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void reduceNoise(Size kernelSize) {
 		Mat temporaryMat = new Mat();
-		Imgproc.boxFilter(this.image, temporaryMat, -1, kernelSize);
+		
+		Imgproc.bilateralFilter(this.image, temporaryMat, -1,12, 2);
 		temporaryMat.copyTo(this.image);
+		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
+		temporaryMat.copyTo(this.image);		
 		Imgcodecs.imwrite("./testData/reducedNoise.jpg", this.image);
 	}
 
@@ -135,7 +148,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		
 		Imgproc.resize(this.image, temporaryMat, new Size(width*widthToHeightRatio, width));
 		temporaryMat.copyTo(this.image);
-		Imgproc.threshold(this.image, temporaryMat, 0.2*255, 256, Imgproc.THRESH_BINARY);
+		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
 		Imgcodecs.imwrite("./testData/nozmalizedSize.jpg", this.image);
 	}
