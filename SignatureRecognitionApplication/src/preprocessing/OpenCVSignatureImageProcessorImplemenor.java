@@ -1,5 +1,7 @@
 package preprocessing;
 
+import static org.junit.Assert.assertTrue;
+
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -32,15 +34,16 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	public final void processImage(String sourcePath) {
 		readImage(sourcePath);
 		blurImage();
+		resizeImageTo(360);
 		eliminateBackground(countThresholdBasedOnBrightnessGradient());
 		reduceNoise();
 		smoothBinaryImage();
-		normalizeSize(128);
+		normalizeSize(200);
 		thin();
 	}
 
 	private void blurImage() {
-		doBilateralFilter(-1,30, 4);
+		doBilateralFilter(-1,30, 7);
 		Imgcodecs.imwrite("./testData/blurred.jpg", this.image);
 	}
 
@@ -124,7 +127,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 
 	private void reduceNoise() {	
-		doBilateralFilter(-1, 3, 4);
+		doBilateralFilter(-1, 30, 7);
 		doThresholdingBasedOnPixelBrightnessGradients();
 		Imgcodecs.imwrite("./testData/reducedNoise.jpg", this.image);
 	}
@@ -145,18 +148,33 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		int columnStart = searchFirstColumnWithAtLeastOneBlackPixel()-5;
 		int columnEnd = searchLastColumnWithAtLeastOneBlackPixel()+5;
 
-		validateSubmatParameters(rowStart, rowEnd, columnStart, columnEnd);
+		if(rowStart < 0) {
+			rowStart = 0;
+		}
+		if(rowEnd > this.image.rows()) {
+			rowEnd = this.image.rows()-1;
+		}
+		if(columnStart < 0) {
+			columnStart = 0;
+		}
+		if(columnEnd > this.image.cols()) {
+			columnEnd = this.image.cols()-1;
+		}
 		
 		this.image = this.image.submat(rowStart, rowEnd, columnStart, columnEnd);
-		double widthToHeightRatio = (double) this.image.width() / this.image.height();
-		
-		Imgproc.resize(this.image, temporaryMat, new Size(height*widthToHeightRatio, height));
-		temporaryMat.copyTo(this.image);
+		resizeImageTo(height);
 		
 		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
 		
 		Imgcodecs.imwrite("./testData/nozmalizedSize.jpg", this.image);
+	}
+	
+	private void resizeImageTo(int width) {
+		double heightToWidthRatio = (double) this.image.height() / this.image.width();
+		
+		Imgproc.resize(this.image, temporaryMat, new Size(width, width * heightToWidthRatio));
+		temporaryMat.copyTo(this.image);
 	}
 	
 	private void validateSubmatParameters(int rowStart, int rowEnd, int columnStart, int columnEnd) {
