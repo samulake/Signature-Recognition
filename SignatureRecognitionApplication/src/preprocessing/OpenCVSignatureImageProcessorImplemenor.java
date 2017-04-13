@@ -34,7 +34,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	public final void processImage(String sourcePath) {
 		readImage(sourcePath);
 		blurImage();
-		resizeImageTo(360);
+		//resizeImageTo(360);
 		eliminateBackground(countThresholdBasedOnBrightnessGradient());
 		reduceNoise();
 		smoothBinaryImage();
@@ -143,23 +143,15 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 
 	private void normalizeSize(int height) {
-		int rowStart = searchFirstRowWithAtLeastOneBlackPixel()-5;
-		int rowEnd = searchLastRowWithAtLeastOneBlackPixel()+5;
-		int columnStart = searchFirstColumnWithAtLeastOneBlackPixel()-5;
-		int columnEnd = searchLastColumnWithAtLeastOneBlackPixel()+5;
-
-		if(rowStart < 0) {
-			rowStart = 0;
-		}
-		if(rowEnd > this.image.rows()) {
-			rowEnd = this.image.rows()-1;
-		}
-		if(columnStart < 0) {
-			columnStart = 0;
-		}
-		if(columnEnd > this.image.cols()) {
-			columnEnd = this.image.cols()-1;
-		}
+		Size rowRange = validateRange(searchFirstRowWithAtLeastOneBlackPixel()-5, searchLastRowWithAtLeastOneBlackPixel()+5, 
+				new Size(0, this.image.height()-1));
+		Size columnRange = validateRange(searchFirstColumnWithAtLeastOneBlackPixel()-5, searchLastColumnWithAtLeastOneBlackPixel()+5, 
+				new Size(0, this.image.width()-1));
+		
+		int rowStart = (int)rowRange.width;
+		int rowEnd = (int)rowRange.height;
+		int columnStart = (int)columnRange.width;
+		int columnEnd = (int)columnRange.height;
 		
 		this.image = this.image.submat(rowStart, rowEnd, columnStart, columnEnd);
 		resizeImageTo(height);
@@ -170,26 +162,34 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		Imgcodecs.imwrite("./testData/nozmalizedSize.jpg", this.image);
 	}
 	
+	private Size validateRange(double start, double end, Size range) {
+		if(start > end) {
+			return validateRange(end, start, range);
+		}
+		if(start == end) {
+			return new Size(range.width, range.height);
+		}
+		if(isOutOfRange(start, range)) {
+			start = 0;
+		}
+		if(isOutOfRange(end, range)) {
+			end = range.height;
+		}
+		return new Size(start, end);
+	}
+	
+	private boolean isOutOfRange(double x, Size range) {
+		if(x < range.width || x > range.height) {
+			return true;
+		} else return false;
+	}
+	
 	private void resizeImageTo(int width) {
+		temporaryMat = new Mat();
 		double heightToWidthRatio = (double) this.image.height() / this.image.width();
 		
 		Imgproc.resize(this.image, temporaryMat, new Size(width, width * heightToWidthRatio));
 		temporaryMat.copyTo(this.image);
-	}
-	
-	private void validateSubmatParameters(int rowStart, int rowEnd, int columnStart, int columnEnd) {
-		if(rowStart < 0) {
-			rowStart = 0;
-		}
-		if(rowEnd > this.image.rows()) {
-			rowEnd = this.image.rows()-1;
-		}
-		if(columnStart < 0) {
-			columnStart = 0;
-		}
-		if(columnEnd > this.image.cols()) {
-			columnEnd = this.image.cols()-1;
-		}
 	}
 
 	private int searchFirstColumnWithAtLeastOneBlackPixel() {
@@ -342,9 +342,8 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 	
 	private void reduceImageTwiceIfSizeIsOver(int allowedMaxHeight, int allowedMaxwidth) {
-		while (this.image.height() > 500 || this.image.width() > 500) {
-			Imgproc.resize(this.image, temporaryMat, new Size(this.image.width() / 2, this.image.height() / 2));
-			temporaryMat.copyTo(this.image);
+		if (this.image.height() > 500 || this.image.width() > 500) {
+			resizeImageTo(500);
 		}
 	}
 	
