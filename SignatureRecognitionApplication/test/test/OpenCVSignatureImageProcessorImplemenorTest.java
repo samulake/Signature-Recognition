@@ -49,6 +49,7 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 
 	@Test// (timeout=3000)
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		long elapsedTime = System.currentTimeMillis();
 		testedClass = new OpenCVSignatureImageProcessorImplemenor();
 		testedClass.processImage("./testData/testImage.jpg");
 		Mat image = (Mat) testedClass.getImage();
@@ -59,5 +60,10 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 				for(double number: image.get(i, j))
 					assertTrue(number == 255 || number == 0);
 		assertTrue(image.width() == 200);
+		System.out.println((System.currentTimeMillis()-elapsedTime)/1000);
+	}
+	
+	public void blurImageTest() {
+		
 	}
 }

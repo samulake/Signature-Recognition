@@ -15,12 +15,10 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	private Mat temporaryMat;
 
 	public OpenCVSignatureImageProcessorImplemenor() {
-		temporaryMat = new Mat();
 	}
 
 	public OpenCVSignatureImageProcessorImplemenor(Mat image) {
 		this.image = image;
-		temporaryMat = new Mat();
 	}
 
 	public void finalize() throws Throwable {
@@ -34,10 +32,8 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	public final void processImage(String sourcePath) {
 		readImage(sourcePath);
 		blurImage();
-		//resizeImageTo(360);
 		eliminateBackground(countThresholdBasedOnBrightnessGradient());
 		reduceNoise();
-		smoothBinaryImage();
 		normalizeSize(200);
 		thin();
 	}
@@ -129,10 +125,12 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	private void reduceNoise() {	
 		doBilateralFilter(-1, 30, 7);
 		doThresholdingBasedOnPixelBrightnessGradients();
+		smoothBinaryImage();
 		Imgcodecs.imwrite("./testData/reducedNoise.jpg", this.image);
 	}
 	
 	private void doBilateralFilter(int diameter, double sigmaColor, double sigmaSpace) {
+		temporaryMat = new Mat();
 		Imgproc.bilateralFilter(this.image, temporaryMat, diameter,sigmaColor, sigmaSpace);
 		temporaryMat.copyTo(this.image);
 	}
@@ -143,6 +141,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 
 	private void normalizeSize(int height) {
+		temporaryMat = new Mat();
 		Size rowRange = validateRange(searchFirstRowWithAtLeastOneBlackPixel()-5, searchLastRowWithAtLeastOneBlackPixel()+5, 
 				new Size(0, this.image.height()-1));
 		Size columnRange = validateRange(searchFirstColumnWithAtLeastOneBlackPixel()-5, searchLastColumnWithAtLeastOneBlackPixel()+5, 
