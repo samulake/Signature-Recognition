@@ -1,22 +1,14 @@
 package preprocessing;
 
-public class SignatureImageProcessor implements ImageProcessor {
-
-	public SignatureImageProcessorImplementor implementor;
-
-	public SignatureImageProcessor(SignatureImageProcessorImplementor implementor){
-		this.implementor = implementor;
-	}
-
-	public void finalize() throws Throwable {
-
-	}
-
-	public Object getImage(){
-		return this.implementor.getImage();
-	}
-
-	public final void processImage(String sourcePath){
-		implementor.processImage(sourcePath);
-	}
+public interface SignatureImageProcessor extends ImageProcessor {
+	
+	public void readImage(String sourcePath);
+	
+	public void eliminateBackground();
+	
+	public void reduceNoise();
+	
+	public void normalizeWidth(int width);
+	
+	public void thin();
 }

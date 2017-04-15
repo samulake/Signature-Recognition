@@ -15,10 +15,10 @@ import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import preprocessing.OpenCVSignatureImageProcessorImplemenor;
+import preprocessing.OpenCVSignatureImageProcessor;
 
 public class OpenCVSignatureImageProcessorImplemenorTest {
-	private OpenCVSignatureImageProcessorImplemenor testedClass;
+	private OpenCVSignatureImageProcessor testedClass;
 	private final String testDataFolderPath = "./testData/";
 	private final int numberOfTests = 10;
 	
@@ -53,7 +53,7 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		System.out.println("Testing processImage()");
 		long elapsedTime = System.currentTimeMillis();
-		testedClass = new OpenCVSignatureImageProcessorImplemenor();
+		testedClass = new OpenCVSignatureImageProcessor();
 		testedClass.processImage(testDataFolderPath + "testImage.jpg");
 		Mat image = (Mat) testedClass.getImage();
 		assertNotNull(image);
@@ -73,7 +73,7 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 	@Test
 	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		System.out.println("Testing readImage()");
-		testedClass = new OpenCVSignatureImageProcessorImplemenor();
+		testedClass = new OpenCVSignatureImageProcessor();
 		String testDataFolderPathWithImageNamePrefix = testDataFolderPath + "readImage/testImage";
 		Method method = testedClass.getClass().getDeclaredMethod("readImage", String.class);
 		method.setAccessible(true);

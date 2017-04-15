@@ -10,16 +10,16 @@ import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProcessorImplementor {
+public class OpenCVSignatureImageProcessor implements SignatureImageProcessor {
 	private Mat image;
 	private Mat temporaryMat;
 	private final String imagesFolderPath = "./data/";
 
-	public OpenCVSignatureImageProcessorImplemenor() {
+	public OpenCVSignatureImageProcessor() {
 		
 	}
 
-	public OpenCVSignatureImageProcessorImplemenor(Mat image) {
+	public OpenCVSignatureImageProcessor(Mat image) {
 		this.image = image;
 	}
 
@@ -34,20 +34,15 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	public final void processImage(String sourcePath) {
 		readImage(sourcePath);
 		blurImage();
-		eliminateBackground(countThresholdBasedOnBrightnessGradient());
+		eliminateBackground();
 		reduceNoise();
-		normalizeSize(200);
+		normalizeWidth(200);
 		thin();
 	}
 
 	private void blurImage() {
 		doBilateralFilter(-1,30, 7);
 		Imgcodecs.imwrite(imagesFolderPath + "blurred.jpg", this.image);
-	}
-
-	private void eliminateBackground(double threshold) {
-		doThresholdingBasedOnPixelBrightnessGradients();
-		Imgcodecs.imwrite(imagesFolderPath + "eliminatedBackground.jpg", this.image);
 	}
 
 	private void smoothBinaryImage() {
@@ -123,13 +118,6 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		}
 		return brightnessSumMultipliedWithGradient / gradientSum;
 	}
-
-	private void reduceNoise() {	
-		doBilateralFilter(-1, 30, 7);
-		doThresholdingBasedOnPixelBrightnessGradients();
-		smoothBinaryImage();
-		Imgcodecs.imwrite(imagesFolderPath + "reducedNoise.jpg", this.image);
-	}
 	
 	private void doBilateralFilter(int diameter, double sigmaColor, double sigmaSpace) {
 		temporaryMat = new Mat();
@@ -138,29 +126,9 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	}
 	
 	private void doThresholdingBasedOnPixelBrightnessGradients() {
-		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
+		double threshold = countThresholdBasedOnBrightnessGradient();
+		Imgproc.threshold(this.image, temporaryMat, threshold, 256, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
-	}
-
-	private void normalizeSize(int height) {
-		temporaryMat = new Mat();
-		Size rowRange = validateRange(searchFirstRowWithAtLeastOneBlackPixel()-5, searchLastRowWithAtLeastOneBlackPixel()+5, 
-				new Size(0, this.image.height()-1));
-		Size columnRange = validateRange(searchFirstColumnWithAtLeastOneBlackPixel()-5, searchLastColumnWithAtLeastOneBlackPixel()+5, 
-				new Size(0, this.image.width()-1));
-		
-		int rowStart = (int)rowRange.width;
-		int rowEnd = (int)rowRange.height;
-		int columnStart = (int)columnRange.width;
-		int columnEnd = (int)columnRange.height;
-		
-		this.image = this.image.submat(rowStart, rowEnd, columnStart, columnEnd);
-		resizeImageTo(height);
-		
-		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
-		temporaryMat.copyTo(this.image);
-		
-		Imgcodecs.imwrite(imagesFolderPath + "nozmalizedSize.jpg", this.image);
 	}
 	
 	private Size validateRange(double start, double end, Size range) {
@@ -238,30 +206,6 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		return this.image.rows() - 1;
 	}
 
-	private void thin() {
-		boolean hasChange;
-		do {
-			hasChange = false;
-			for (int x = 1; x + 1 < image.rows(); x++) {
-				for (int y = 1; y + 1 < image.cols(); y++) {
-					int numberOfWhiteToBlackTransitions = countNumberOfWhiteToBlackTransitionsAroundPixel(x, y);
-					int numberOfBlackNeighbourPixels = countBlackNeighbourPixels(x, y);
-					if (image.get(x, y)[0] == 0 && 2 <= numberOfBlackNeighbourPixels
-							&& numberOfBlackNeighbourPixels <= 6 && numberOfWhiteToBlackTransitions == 1
-							&& atLeastOneWhitePixel(image.get(x - 1, y)[0], image.get(x, y + 1)[0],
-									image.get(x, y - 1)[0])
-							&& atLeastOneWhitePixel(image.get(x - 1, y)[0], image.get(x, y + 1)[0],
-									image.get(x + 1, y)[0])) {
-						this.image.put(x, y, 255);
-						hasChange = true;
-					}
-				}
-			}
-		} while (hasChange);
-
-		Imgcodecs.imwrite(imagesFolderPath + "thinnedImage.jpg", image);
-	}
-
 	private boolean atLeastOneWhitePixel(double... pixels) {
 		for (double pixel : pixels) {
 			if (pixel == 255) {
@@ -335,17 +279,80 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	private boolean isBlack(double pixelValue) {
 		return pixelValue == 0;
 	}
-
-	private void readImage(String sourcePath) {
-		this.image = Imgcodecs.imread(sourcePath, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
-		reduceImageTwiceIfSizeIsOver(500, 500);
-		Imgcodecs.imwrite(imagesFolderPath + "grayScale.jpg", this.image);
-	}
 	
-	private void reduceImageTwiceIfSizeIsOver(int allowedMaxHeight, int allowedMaxwidth) {
-		if (this.image.width() > 500) {
+	private void reduceImageTwiceIfSizeIsOver(int allowedMaxwidth) {
+		if (this.image.width() > allowedMaxwidth) {
 			resizeImageTo(500);
 		}
+	}
+
+	@Override
+	public void readImage(String sourcePath) {
+		this.image = Imgcodecs.imread(sourcePath, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+		reduceImageTwiceIfSizeIsOver(500);
+		Imgcodecs.imwrite(imagesFolderPath + "grayScale.jpg", this.image);
+	}
+
+	@Override
+	public void eliminateBackground() {
+		doThresholdingBasedOnPixelBrightnessGradients();
+		Imgcodecs.imwrite(imagesFolderPath + "eliminatedBackground.jpg", this.image);
+	}
+
+	@Override
+	public void reduceNoise() {
+		doBilateralFilter(-1, 30, 7);
+		doThresholdingBasedOnPixelBrightnessGradients();
+		smoothBinaryImage();
+		Imgcodecs.imwrite(imagesFolderPath + "reducedNoise.jpg", this.image);
+	}
+
+	@Override
+	public void normalizeWidth(int width) {
+		temporaryMat = new Mat();
+		Size rowRange = validateRange(searchFirstRowWithAtLeastOneBlackPixel()-5, searchLastRowWithAtLeastOneBlackPixel()+5, 
+				new Size(0, this.image.height()-1));
+		Size columnRange = validateRange(searchFirstColumnWithAtLeastOneBlackPixel()-5, searchLastColumnWithAtLeastOneBlackPixel()+5, 
+				new Size(0, this.image.width()-1));
+		
+		int rowStart = (int)rowRange.width;
+		int rowEnd = (int)rowRange.height;
+		int columnStart = (int)columnRange.width;
+		int columnEnd = (int)columnRange.height;
+		
+		this.image = this.image.submat(rowStart, rowEnd, columnStart, columnEnd);
+		resizeImageTo(width);
+		
+		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
+		temporaryMat.copyTo(this.image);
+		
+		Imgcodecs.imwrite(imagesFolderPath + "nozmalizedSize.jpg", this.image);
+		
+	}
+
+	@Override
+	public void thin() {
+		boolean hasChange;
+		do {
+			hasChange = false;
+			for (int x = 1; x + 1 < image.rows(); x++) {
+				for (int y = 1; y + 1 < image.cols(); y++) {
+					int numberOfWhiteToBlackTransitions = countNumberOfWhiteToBlackTransitionsAroundPixel(x, y);
+					int numberOfBlackNeighbourPixels = countBlackNeighbourPixels(x, y);
+					if (image.get(x, y)[0] == 0 && 2 <= numberOfBlackNeighbourPixels
+							&& numberOfBlackNeighbourPixels <= 6 && numberOfWhiteToBlackTransitions == 1
+							&& atLeastOneWhitePixel(image.get(x - 1, y)[0], image.get(x, y + 1)[0],
+									image.get(x, y - 1)[0])
+							&& atLeastOneWhitePixel(image.get(x - 1, y)[0], image.get(x, y + 1)[0],
+									image.get(x + 1, y)[0])) {
+						this.image.put(x, y, 255);
+						hasChange = true;
+					}
+				}
+			}
+		} while (hasChange);
+
+		Imgcodecs.imwrite(imagesFolderPath + "thinnedImage.jpg", image);
 	}
 	
 	
