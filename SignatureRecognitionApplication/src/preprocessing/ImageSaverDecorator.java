@@ -9,6 +9,20 @@ public class ImageSaverDecorator extends SignatureImageProcessorDecorator {
 	public ImageSaverDecorator(SignatureImageProcessor component) {
 		super(component);
 	}
+	
+	
+
+	@Override
+	public Object getImage() {
+		return super.getImage();
+	}
+
+
+
+	@Override
+	public void processImage(String sourcePath) {
+		super.processImage(sourcePath);
+	}
 
 	@Override
 	public void readImage(String sourcePath) {

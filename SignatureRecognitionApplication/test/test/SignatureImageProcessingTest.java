@@ -15,6 +15,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import preprocessing.ImageSaverDecorator;
 import preprocessing.OpenCVSignatureImageProcessor;
 import preprocessing.SignatureImageProcessor;
 
@@ -54,7 +55,7 @@ public class SignatureImageProcessingTest {
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		System.out.println("Testing processImage()");
 		long elapsedTime = System.currentTimeMillis();
-		testedClass = new LoggerDecorator(new OpenCVSignatureImageProcessor());
+		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
 		testedClass.processImage(testDataFolderPath + "testImage.jpg");
 		Mat image = (Mat) testedClass.getImage();
 		assertNotNull(image);
@@ -90,4 +91,6 @@ public class SignatureImageProcessingTest {
 			Imgcodecs.imwrite(testDataFolderPathWithImageNamePrefix + i + "Result" + i + ".jpg", (Mat) testedClass.getImage());
 		}
 	}
+	
+	
 }
