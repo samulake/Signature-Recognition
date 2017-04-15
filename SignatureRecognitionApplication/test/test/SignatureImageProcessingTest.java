@@ -1,4 +1,5 @@
 package test;
+
 import static org.junit.Assert.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +24,7 @@ public class SignatureImageProcessingTest {
 	private SignatureImageProcessor testedClass;
 	private final String testDataFolderPath = "./testData/";
 	private final int numberOfTests = 10;
-	
+
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -41,18 +42,19 @@ public class SignatureImageProcessingTest {
 	public void tearDown() throws Exception {
 	}
 
-	//@Test
+	// @Test
 	public void testFinalize() {
 		fail("Not yet implemented");
 	}
 
-	//@Test
+	// @Test
 	public void testGetImage() {
 		fail("Not yet implemented");
 	}
 
-	@Test// (timeout=3000)
-	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	@Test // (timeout=3000)
+	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
 		System.out.println("Testing processImage()");
 		long elapsedTime = System.currentTimeMillis();
 		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
@@ -60,37 +62,53 @@ public class SignatureImageProcessingTest {
 		Mat image = (Mat) testedClass.getImage();
 		assertNotNull(image);
 		assertTrue(image.channels() == 1);
-		for(int i = 0; i < image.rows(); i++)
-			for(int j = 0; j < image.cols(); j++)
-				for(double number: image.get(i, j))
+		for (int i = 0; i < image.rows(); i++)
+			for (int j = 0; j < image.cols(); j++)
+				for (double number : image.get(i, j))
 					assertTrue(number == 255 || number == 0);
 		assertTrue(image.width() == 200);
-		System.out.println((System.currentTimeMillis()-elapsedTime)/1000);
+		System.out.println((System.currentTimeMillis() - elapsedTime) / 1000);
 	}
-	
-	public void blurImageTest() {
-		
-	}
-	
+
 	@Test
-	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
 		System.out.println("Testing readImage()");
-		testedClass = new LoggerDecorator(new OpenCVSignatureImageProcessor());
+		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
 		String testDataFolderPathWithImageNamePrefix = testDataFolderPath + "readImage/testImage";
 		Method method = testedClass.getClass().getDeclaredMethod("readImage", String.class);
 		method.setAccessible(true);
-		for(int i = 0; i < numberOfTests; i++) {
+		for (int i = 0; i < numberOfTests; i++) {
 			String inputfilePath = testDataFolderPathWithImageNamePrefix + i + ".jpg";
 			long elapsedTime = System.currentTimeMillis();
 			method.invoke(testedClass, inputfilePath);
-			elapsedTime = System.currentTimeMillis()-elapsedTime;
+			elapsedTime = System.currentTimeMillis() - elapsedTime;
 			assertTrue(elapsedTime < 100);
 			Mat resultImage = (Mat) testedClass.getImage();
 			assertTrue(resultImage.channels() == 1);
 			assertTrue(resultImage.width() <= 500);
-			Imgcodecs.imwrite(testDataFolderPathWithImageNamePrefix + i + "Result" + i + ".jpg", (Mat) testedClass.getImage());
+			Imgcodecs.imwrite(testDataFolderPathWithImageNamePrefix + i + "Result" + i + ".jpg",
+					(Mat) testedClass.getImage());
 		}
 	}
-	
-	
+
+	@Test
+	public void eliminateBackgroundTest() {
+
+	}
+
+	@Test
+	public void reduceNoiseTest() {
+
+	}
+
+	@Test
+	public void normalizeWidthTest() {
+
+	}
+
+	@Test
+	public void thinTest() {
+
+	}
 }
