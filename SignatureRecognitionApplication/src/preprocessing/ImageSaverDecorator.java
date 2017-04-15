@@ -1,48 +1,42 @@
 package preprocessing;
 
+import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
-public abstract class ImageSaverDecorator extends SignatureImageProcessor {
-	private SignatureImageProcessor component;
+public class ImageSaverDecorator extends SignatureImageProcessorDecorator {
+	private final String imagesFolderPath = "./data/";
 	
 	public ImageSaverDecorator(SignatureImageProcessor component) {
-		this.component = component;
-	}
-
-	@Override
-	public Object getImage() {
-		return component.getImage();
-	}
-
-	@Override
-	public void processImage(String sourcePath) {
-		component.processImage(sourcePath);
+		super(component);
 	}
 
 	@Override
 	public void readImage(String sourcePath) {
-		component.readImage(sourcePath);
+		super.readImage(sourcePath);
+		Imgcodecs.imwrite(imagesFolderPath + "grayScale.jpg", (Mat)super.getImage());
 	}
 
 	@Override
 	public void eliminateBackground() {
-		component.eliminateBackground();
+		super.eliminateBackground();
+		Imgcodecs.imwrite(imagesFolderPath + "eliminatedBackground.jpg", (Mat)super.getImage());
 	}
 
 	@Override
 	public void reduceNoise() {
-		component.reduceNoise();
+		super.reduceNoise();
+		Imgcodecs.imwrite(imagesFolderPath + "reducedNoise.jpg", (Mat)super.getImage());
 	}
 
 	@Override
 	public void normalizeWidth(int width) {
-		component.normalizeWidth(width);
-
+		super.normalizeWidth(width);
+		Imgcodecs.imwrite(imagesFolderPath + "nozmalizedSize.jpg", (Mat)super.getImage());
 	}
 
 	@Override
 	public void thin() {
-		component.thin();
+		super.thin();
+		Imgcodecs.imwrite(imagesFolderPath + "thinnedImage.jpg", (Mat)super.getImage());
 	}
-
 }
