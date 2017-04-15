@@ -1,14 +1,23 @@
 package preprocessing;
 
-public interface SignatureImageProcessor extends ImageProcessor {
+public abstract class SignatureImageProcessor implements ImageProcessor {
 	
-	public void readImage(String sourcePath);
+	@Override
+	public void processImage(String sourcePath) {
+		readImage(sourcePath);
+		eliminateBackground();
+		reduceNoise();
+		normalizeWidth(200);
+		thin();
+	}
+
+	public abstract void readImage(String sourcePath);
 	
-	public void eliminateBackground();
+	public abstract void eliminateBackground();
 	
-	public void reduceNoise();
+	public abstract void reduceNoise();
 	
-	public void normalizeWidth(int width);
+	public abstract void normalizeWidth(int width);
 	
-	public void thin();
+	public abstract void thin();
 }
