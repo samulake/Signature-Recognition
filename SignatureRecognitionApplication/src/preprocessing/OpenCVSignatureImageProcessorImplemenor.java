@@ -13,8 +13,10 @@ import org.opencv.imgproc.Imgproc;
 public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProcessorImplementor {
 	private Mat image;
 	private Mat temporaryMat;
+	private final String imagesFolderPath = "./data/";
 
 	public OpenCVSignatureImageProcessorImplemenor() {
+		
 	}
 
 	public OpenCVSignatureImageProcessorImplemenor(Mat image) {
@@ -40,12 +42,12 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 
 	private void blurImage() {
 		doBilateralFilter(-1,30, 7);
-		Imgcodecs.imwrite("./testData/blurred.jpg", this.image);
+		Imgcodecs.imwrite(imagesFolderPath + "blurred.jpg", this.image);
 	}
 
 	private void eliminateBackground(double threshold) {
 		doThresholdingBasedOnPixelBrightnessGradients();
-		Imgcodecs.imwrite("./testData/eliminatedBackground.jpg", this.image);
+		Imgcodecs.imwrite(imagesFolderPath + "eliminatedBackground.jpg", this.image);
 	}
 
 	private void smoothBinaryImage() {
@@ -126,7 +128,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		doBilateralFilter(-1, 30, 7);
 		doThresholdingBasedOnPixelBrightnessGradients();
 		smoothBinaryImage();
-		Imgcodecs.imwrite("./testData/reducedNoise.jpg", this.image);
+		Imgcodecs.imwrite(imagesFolderPath + "reducedNoise.jpg", this.image);
 	}
 	
 	private void doBilateralFilter(int diameter, double sigmaColor, double sigmaSpace) {
@@ -158,7 +160,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
 		
-		Imgcodecs.imwrite("./testData/nozmalizedSize.jpg", this.image);
+		Imgcodecs.imwrite(imagesFolderPath + "nozmalizedSize.jpg", this.image);
 	}
 	
 	private Size validateRange(double start, double end, Size range) {
@@ -257,7 +259,7 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 			}
 		} while (hasChange);
 
-		Imgcodecs.imwrite("./testData/thinnedImage.jpg", image);
+		Imgcodecs.imwrite(imagesFolderPath + "thinnedImage.jpg", image);
 	}
 
 	private boolean atLeastOneWhitePixel(double... pixels) {
@@ -337,11 +339,11 @@ public class OpenCVSignatureImageProcessorImplemenor extends SignatureImageProce
 	private void readImage(String sourcePath) {
 		this.image = Imgcodecs.imread(sourcePath, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
 		reduceImageTwiceIfSizeIsOver(500, 500);
-		Imgcodecs.imwrite("./testData/grayScale.jpg", this.image);
+		Imgcodecs.imwrite(imagesFolderPath + "grayScale.jpg", this.image);
 	}
 	
 	private void reduceImageTwiceIfSizeIsOver(int allowedMaxHeight, int allowedMaxwidth) {
-		if (this.image.height() > 500 || this.image.width() > 500) {
+		if (this.image.width() > 500) {
 			resizeImageTo(500);
 		}
 	}

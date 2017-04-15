@@ -19,6 +19,8 @@ import preprocessing.OpenCVSignatureImageProcessorImplemenor;
 
 public class OpenCVSignatureImageProcessorImplemenorTest {
 	private OpenCVSignatureImageProcessorImplemenor testedClass;
+	private final String testDataFolderPath = "./testData/";
+	private final int numberOfTests = 10;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -49,9 +51,10 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 
 	@Test// (timeout=3000)
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		System.out.println("Testing processImage()");
 		long elapsedTime = System.currentTimeMillis();
 		testedClass = new OpenCVSignatureImageProcessorImplemenor();
-		testedClass.processImage("./testData/testImage.jpg");
+		testedClass.processImage(testDataFolderPath + "testImage.jpg");
 		Mat image = (Mat) testedClass.getImage();
 		assertNotNull(image);
 		assertTrue(image.channels() == 1);
@@ -65,5 +68,25 @@ public class OpenCVSignatureImageProcessorImplemenorTest {
 	
 	public void blurImageTest() {
 		
+	}
+	
+	@Test
+	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		System.out.println("Testing readImage()");
+		testedClass = new OpenCVSignatureImageProcessorImplemenor();
+		String testDataFolderPathWithImageNamePrefix = testDataFolderPath + "readImage/testImage";
+		Method method = testedClass.getClass().getDeclaredMethod("readImage", String.class);
+		method.setAccessible(true);
+		for(int i = 0; i < numberOfTests; i++) {
+			String inputfilePath = testDataFolderPathWithImageNamePrefix + i + ".jpg";
+			long elapsedTime = System.currentTimeMillis();
+			method.invoke(testedClass, inputfilePath);
+			elapsedTime = System.currentTimeMillis()-elapsedTime;
+			assertTrue(elapsedTime < 100);
+			Mat resultImage = (Mat) testedClass.getImage();
+			assertTrue(resultImage.channels() == 1);
+			assertTrue(resultImage.width() <= 500);
+			Imgcodecs.imwrite(testDataFolderPathWithImageNamePrefix + i + "Result" + i + ".jpg", (Mat) testedClass.getImage());
+		}
 	}
 }
