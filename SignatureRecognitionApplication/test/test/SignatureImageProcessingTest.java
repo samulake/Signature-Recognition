@@ -24,6 +24,7 @@ public class SignatureImageProcessingTest {
 	private SignatureImageProcessor testedClass;
 	private final String testDataFolderPath = "./testData/";
 	private final int numberOfTests = 10;
+	private final String imageType = ".jpg";
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -56,18 +57,29 @@ public class SignatureImageProcessingTest {
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		System.out.println("Testing processImage()");
-		long elapsedTime = System.currentTimeMillis();
 		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
+		long elapsedTime = System.currentTimeMillis();
 		testedClass.processImage(testDataFolderPath + "testImage.jpg");
+		System.out.println((System.currentTimeMillis() - elapsedTime) / 1000);
 		Mat image = (Mat) testedClass.getImage();
 		assertNotNull(image);
-		assertTrue(image.channels() == 1);
+		assertGrayScaleImage(image);
+		assertTrue(isBinaryImage(image));
+		assertEquals(image.width(),200);
+	}
+	
+	private void assertGrayScaleImage(Mat image) {
+		assertEquals(image.channels(), 1);
+	}
+	
+	private boolean isBinaryImage(Mat image) {
 		for (int i = 0; i < image.rows(); i++)
 			for (int j = 0; j < image.cols(); j++)
-				for (double number : image.get(i, j))
-					assertTrue(number == 255 || number == 0);
-		assertTrue(image.width() == 200);
-		System.out.println((System.currentTimeMillis() - elapsedTime) / 1000);
+				for (double pixel : image.get(i, j))
+					if (!(pixel == 255 || pixel == 0)) {
+						return false;
+					}
+		return true;
 	}
 
 	@Test
@@ -75,11 +87,15 @@ public class SignatureImageProcessingTest {
 			IllegalArgumentException, InvocationTargetException {
 		System.out.println("Testing readImage()");
 		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
-		String testDataFolderPathWithImageNamePrefix = testDataFolderPath + "readImage/testImage";
-		Method method = testedClass.getClass().getDeclaredMethod("readImage", String.class);
+		Method testedMethod = testedClass.getClass().getDeclaredMethod("readImage", String.class);
+		String inputDataPathPrefix = testDataFolderPath + testedMethod.getName() + "/testImage";
+		imageProcessingSubmethodTest(testedMethod, inputDataPathPrefix, imageType);
+	}
+	
+	private void imageProcessingSubmethodTest(Method method, String inputDataPathPrefix, String inputDataSuffix) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		method.setAccessible(true);
 		for (int i = 0; i < numberOfTests; i++) {
-			String inputfilePath = testDataFolderPathWithImageNamePrefix + i + ".jpg";
+			String inputfilePath = inputDataPathPrefix + i + inputDataSuffix;
 			long elapsedTime = System.currentTimeMillis();
 			method.invoke(testedClass, inputfilePath);
 			elapsedTime = System.currentTimeMillis() - elapsedTime;
@@ -87,7 +103,7 @@ public class SignatureImageProcessingTest {
 			Mat resultImage = (Mat) testedClass.getImage();
 			assertTrue(resultImage.channels() == 1);
 			assertTrue(resultImage.width() <= 500);
-			Imgcodecs.imwrite(testDataFolderPathWithImageNamePrefix + i + "Result" + i + ".jpg",
+			Imgcodecs.imwrite(inputDataPathPrefix + i + "Result" + i + inputDataSuffix,
 					(Mat) testedClass.getImage());
 		}
 	}
