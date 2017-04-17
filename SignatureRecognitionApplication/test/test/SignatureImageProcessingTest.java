@@ -94,7 +94,7 @@ public class SignatureImageProcessingTest {
 
 	@Test
 	public void eliminateBackgroundTest() {
-
+		System.out.println("Testing eliminateBackground()");
 	}
 
 	@Test
