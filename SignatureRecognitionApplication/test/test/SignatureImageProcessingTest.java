@@ -26,6 +26,7 @@ public class SignatureImageProcessingTest {
 	private final int numberOfTests = 10;
 	private final String imageExtention = ".jpg";
 	Method testedMethod;
+	private int maxTimeDuration;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -38,6 +39,7 @@ public class SignatureImageProcessingTest {
 
 	@Before
 	public void setUp() throws Exception {
+		maxTimeDuration = 1000;
 	}
 
 	@After
@@ -84,7 +86,7 @@ public class SignatureImageProcessingTest {
 			IllegalArgumentException, InvocationTargetException {
 
 		initializeTest("readImage", String.class);
-
+		maxTimeDuration = 100;
 		for (int i = 0; i < numberOfTests; i++) {
 			String inputFilePath = createInputDataPathPrefix() + i + imageExtention;
 			doTesting(i, inputFilePath);
@@ -94,8 +96,7 @@ public class SignatureImageProcessingTest {
 	private void doTesting(int testID, Object... arguments)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String inputDataPathPrefix = createInputDataPathPrefix();
-		String inputFilePath = inputDataPathPrefix + testID + imageExtention;
-		invocationTest(100, arguments);
+		invocationTest(maxTimeDuration, arguments);
 		Mat resultImage = (Mat) testedClass.getImage();
 		assertCommonTests(resultImage);
 		Imgcodecs.imwrite(inputDataPathPrefix + testID + "Result" + testID + imageExtention,
@@ -134,6 +135,21 @@ public class SignatureImageProcessingTest {
 		assertGrayScaleImage(image);
 		assertTrue(image.width() <= 500);
 	}
+
+	@Test
+	public void eliminateBackgroundTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+		initializeTest("eliminateBackground", null);
+		maxTimeDuration = 400;
+		for (int testID = 0; testID < numberOfTests; testID++) {
+			Mat image = Imgcodecs.imread(createInputDataPathPrefix() + testID + imageExtention, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+			testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor(image));
+			doTesting(testID);
+			image = (Mat) testedClass.getImage();
+			assertTrue(isBinaryImage(image));
+		}
+	}
+
 	@Test
 	public void reduceNoiseTest() {
 
