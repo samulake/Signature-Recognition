@@ -24,6 +24,8 @@ public class SignatureImageProcessingTest {
 	private SignatureImageProcessor testedClass;
 	private final String testDataFolderPath = "./testData/";
 	private final int numberOfTests = 10;
+	private final String imageExtention = ".jpg";
+	Method testedMethod;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -56,47 +58,82 @@ public class SignatureImageProcessingTest {
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		System.out.println("Testing processImage()");
-		long elapsedTime = System.currentTimeMillis();
 		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
 		testedClass.processImage(testDataFolderPath + "testImage.jpg");
 		Mat image = (Mat) testedClass.getImage();
-		assertNotNull(image);
-		assertTrue(image.channels() == 1);
+		assertTrue(isBinaryImage(image));
+		assertEquals(image.width(), 200);
+	}
+
+	private void assertGrayScaleImage(Mat image) {
+		assertEquals(image.channels(), 1);
+	}
+
+	private boolean isBinaryImage(Mat image) {
 		for (int i = 0; i < image.rows(); i++)
 			for (int j = 0; j < image.cols(); j++)
-				for (double number : image.get(i, j))
-					assertTrue(number == 255 || number == 0);
-		assertTrue(image.width() == 200);
-		System.out.println((System.currentTimeMillis() - elapsedTime) / 1000);
+				for (double pixel : image.get(i, j))
+					if (!(pixel == 255 || pixel == 0)) {
+						return false;
+					}
+		return true;
 	}
 
 	@Test
 	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		System.out.println("Testing readImage()");
-		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
-		String testDataFolderPathWithImageNamePrefix = testDataFolderPath + "readImage/testImage";
-		Method method = testedClass.getClass().getDeclaredMethod("readImage", String.class);
-		method.setAccessible(true);
+
+		initializeTest("readImage", String.class);
+
 		for (int i = 0; i < numberOfTests; i++) {
-			String inputfilePath = testDataFolderPathWithImageNamePrefix + i + ".jpg";
-			long elapsedTime = System.currentTimeMillis();
-			method.invoke(testedClass, inputfilePath);
-			elapsedTime = System.currentTimeMillis() - elapsedTime;
-			assertTrue(elapsedTime < 100);
-			Mat resultImage = (Mat) testedClass.getImage();
-			assertTrue(resultImage.channels() == 1);
-			assertTrue(resultImage.width() <= 500);
-			Imgcodecs.imwrite(testDataFolderPathWithImageNamePrefix + i + "Result" + i + ".jpg",
-					(Mat) testedClass.getImage());
+			String inputFilePath = createInputDataPathPrefix() + i + imageExtention;
+			doTesting(i, inputFilePath);
 		}
 	}
 
-	@Test
-	public void eliminateBackgroundTest() {
-		System.out.println("Testing eliminateBackground()");
+	private void doTesting(int testID, Object... arguments)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		String inputDataPathPrefix = createInputDataPathPrefix();
+		String inputFilePath = inputDataPathPrefix + testID + imageExtention;
+		invocationTest(100, arguments);
+		Mat resultImage = (Mat) testedClass.getImage();
+		assertCommonTests(resultImage);
+		Imgcodecs.imwrite(inputDataPathPrefix + testID + "Result" + testID + imageExtention,
+				resultImage);
+	}
+	
+	private void invocationTest(long allowedElapsedTime, Object... arguments)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+		long elapsedTime = invokeTestedMethodAndCountTimeDuration(arguments);
+		assertTrue(elapsedTime <= allowedElapsedTime);
 	}
 
+	private long invokeTestedMethodAndCountTimeDuration(Object... arguments)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+		long startTime = System.currentTimeMillis();
+		testedMethod.invoke(testedClass, arguments);
+		return System.currentTimeMillis() - startTime;
+	}
+
+	private String createInputDataPathPrefix() {
+		return testDataFolderPath + testedMethod.getName() + "/testImage";
+	}
+
+	private void initializeTest(String testedMethodName, Class<?>... args)
+			throws NoSuchMethodException, SecurityException {
+		System.out.println("Testing " + testedMethodName + "()");
+		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
+		testedMethod = testedClass.getClass().getDeclaredMethod(testedMethodName, args);
+		testedMethod.setAccessible(true);
+	}
+
+	private void assertCommonTests(Mat image) {
+		assertNotNull(image);
+		assertGrayScaleImage(image);
+		assertTrue(image.width() <= 500);
+	}
 	@Test
 	public void reduceNoiseTest() {
 
