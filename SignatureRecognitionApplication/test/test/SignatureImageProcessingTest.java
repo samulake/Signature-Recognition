@@ -56,15 +56,72 @@ public class SignatureImageProcessingTest {
 		fail("Not yet implemented");
 	}
 
-	@Test // (timeout=3000)
+	@Test (timeout=1000*numberOfTests)
 	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		System.out.println("Testing processImage()");
 		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
-		testedClass.processImage(testDataFolderPath + "testImage.jpg");
-		Mat image = (Mat) testedClass.getImage();
-		assertTrue(isBinaryImage(image));
-		assertEquals(image.width(), 200);
+		String inputDataPathPrefix = "./testData/processImage/testImage";
+		for (int testID = 0; testID < numberOfTests; testID++) {
+			String inputFilePath = inputDataPathPrefix + testID + imageExtention;
+			testedClass.processImage(inputFilePath);
+			Mat resultImage = (Mat) testedClass.getImage();
+			assertTrue(isBinaryImage(resultImage));
+			assertEquals(resultImage.width(), 200);
+			Imgcodecs.imwrite(inputDataPathPrefix + testID + "Result" + testID + imageExtention, resultImage);
+		}
+	}
+
+	@Test
+	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+
+		initializeTest("readImage", String.class);
+		maxTimeDuration = 100;
+		for (int i = 0; i < numberOfTests; i++) {
+			String inputFilePath = createInputDataPathPrefix() + i + imageExtention;
+			doCommonTesting(i, inputFilePath);
+		}
+	}
+
+	@Test
+	public void eliminateBackgroundTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+		initializeTest("eliminateBackground", null);
+		maxTimeDuration = 400;
+		for (int testID = 0; testID < numberOfTests; testID++) {
+			Mat image = Imgcodecs.imread(createInputDataPathPrefix() + testID + imageExtention,
+					Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+			testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor(image));
+			doCommonTesting(testID);
+			image = (Mat) testedClass.getImage();
+			assertTrue(isBinaryImage(image));
+		}
+	}
+
+	@Test
+	public void reduceNoiseTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+		initializeTest("reduceNoise", null);
+		maxTimeDuration = 3500;
+		for (int testID = 0; testID < numberOfTests; testID++) {
+			Mat image = Imgcodecs.imread(createInputDataPathPrefix() + testID + imageExtention,
+					Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+			testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor(image));
+			doCommonTesting(testID);
+			image = (Mat) testedClass.getImage();
+			assertTrue(isBinaryImage(image));
+		}
+	}
+
+	@Test
+	public void normalizeWidthTest() {
+
+	}
+
+	@Test
+	public void thinTest() {
+
 	}
 
 	private void assertGrayScaleImage(Mat image) {
@@ -81,28 +138,15 @@ public class SignatureImageProcessingTest {
 		return true;
 	}
 
-	@Test
-	public void readImageTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-
-		initializeTest("readImage", String.class);
-		maxTimeDuration = 100;
-		for (int i = 0; i < numberOfTests; i++) {
-			String inputFilePath = createInputDataPathPrefix() + i + imageExtention;
-			doTesting(i, inputFilePath);
-		}
-	}
-
-	private void doTesting(int testID, Object... arguments)
+	private void doCommonTesting(int testID, Object... arguments)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		String inputDataPathPrefix = createInputDataPathPrefix();
 		invocationTest(maxTimeDuration, arguments);
 		Mat resultImage = (Mat) testedClass.getImage();
 		assertCommonTests(resultImage);
-		Imgcodecs.imwrite(inputDataPathPrefix + testID + "Result" + testID + imageExtention,
-				resultImage);
+		Imgcodecs.imwrite(inputDataPathPrefix + testID + "Result" + testID + imageExtention, resultImage);
 	}
-	
+
 	private void invocationTest(long allowedElapsedTime, Object... arguments)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
@@ -134,34 +178,5 @@ public class SignatureImageProcessingTest {
 		assertNotNull(image);
 		assertGrayScaleImage(image);
 		assertTrue(image.width() <= 500);
-	}
-
-	@Test
-	public void eliminateBackgroundTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		initializeTest("eliminateBackground", null);
-		maxTimeDuration = 400;
-		for (int testID = 0; testID < numberOfTests; testID++) {
-			Mat image = Imgcodecs.imread(createInputDataPathPrefix() + testID + imageExtention, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
-			testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor(image));
-			doTesting(testID);
-			image = (Mat) testedClass.getImage();
-			assertTrue(isBinaryImage(image));
-		}
-	}
-
-	@Test
-	public void reduceNoiseTest() {
-
-	}
-
-	@Test
-	public void normalizeWidthTest() {
-
-	}
-
-	@Test
-	public void thinTest() {
-
 	}
 }

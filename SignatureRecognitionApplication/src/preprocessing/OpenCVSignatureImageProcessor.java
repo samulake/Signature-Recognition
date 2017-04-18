@@ -35,9 +35,8 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 
 	@Override
 	public void reduceNoise() {
-		doBilateralFilter(-1, 30, 7);
+		doBoxFilter(-1, new Size(2,2));
 		doThresholdingBasedOnPixelBrightnessGradients();
-		smoothBinaryImage();
 	}
 
 	@Override
@@ -88,65 +87,6 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 		doBilateralFilter(-1, 30, 7);
 	}
 
-	private void smoothBinaryImage() {
-		boolean hasChange;
-		int filterValue = 0;
-		do {
-			hasChange = false;
-			for (int x = image.rows() - 2; x > 0; x--) {
-				for (int y = image.cols() - 2; y > 0; y--) {
-					hasChange = hasChange || smoothPoint(x, y, filterValue);
-				}
-			}
-			filterValue++;
-			filterValue = filterValue % 4;
-		} while (hasChange);
-	}
-
-	private boolean smoothPoint(int x, int y, int filterValue) {
-		if (filterValue == 0 && this.image.get(x, y - 1)[0] == this.image.get(x - 1, y - 1)[0]
-				&& this.image.get(x - 1, y - 1)[0] == this.image.get(x - 1, y)[0]
-				&& this.image.get(x - 1, y)[0] == this.image.get(x - 1, y + 1)[0]
-				&& this.image.get(x - 1, y + 1)[0] == this.image.get(x, y + 1)[0]
-				&& this.image.get(x, y)[0] != this.image.get(x, y - 1)[0]) {
-
-			this.image.put(x, y, this.image.get(x, y - 1)[0]);
-			return true;
-		}
-
-		if (filterValue == 1 && this.image.get(x - 1, y)[0] == this.image.get(x - 1, y + 1)[0]
-				&& this.image.get(x - 1, y + 1)[0] == this.image.get(x, y + 1)[0]
-				&& this.image.get(x, y + 1)[0] == this.image.get(x + 1, y + 1)[0]
-				&& this.image.get(x + 1, y + 1)[0] == this.image.get(x + 1, y)[0]
-				&& this.image.get(x, y)[0] != this.image.get(x - 1, y)[0]) {
-
-			this.image.put(x, y, this.image.get(x - 1, y));
-			return true;
-		}
-
-		if (filterValue == 2 && this.image.get(x, y + 1)[0] == this.image.get(x + 1, y + 1)[0]
-				&& this.image.get(x + 1, y + 1)[0] == this.image.get(x + 1, y)[0]
-				&& this.image.get(x + 1, y)[0] == this.image.get(x + 1, y - 1)[0]
-				&& this.image.get(x + 1, y - 1)[0] == this.image.get(x, y - 1)[0]
-				&& this.image.get(x, y)[0] != this.image.get(x, y + 1)[0]) {
-
-			this.image.put(x, y, this.image.get(x, y + 1));
-			return true;
-		}
-
-		if (filterValue == 3 && this.image.get(x + 1, y)[0] == this.image.get(x + 1, y - 1)[0]
-				&& this.image.get(x + 1, y - 1)[0] == this.image.get(x, y - 1)[0]
-				&& this.image.get(x, y - 1)[0] == this.image.get(x - 1, y - 1)[0]
-				&& this.image.get(x - 1, y - 1)[0] == this.image.get(x - 1, y)[0]
-				&& this.image.get(x, y)[0] != this.image.get(x + 1, y)[0]) {
-
-			this.image.put(x, y, this.image.get(x + 1, y));
-			return true;
-		}
-
-		return false;
-	}
-
 	private double countThresholdBasedOnBrightnessGradient() {
 		double gradientSum = 0;
 		double brightnessSumMultipliedWithGradient = 0;
@@ -165,6 +105,12 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 	private void doBilateralFilter(int diameter, double sigmaColor, double sigmaSpace) {
 		temporaryMat = new Mat();
 		Imgproc.bilateralFilter(this.image, temporaryMat, diameter, sigmaColor, sigmaSpace);
+		temporaryMat.copyTo(this.image);
+	}
+	
+	private void doBoxFilter(int depth, Size kernelSize) {
+		temporaryMat = new Mat();
+		Imgproc.boxFilter(this.image, temporaryMat, depth, kernelSize);
 		temporaryMat.copyTo(this.image);
 	}
 
