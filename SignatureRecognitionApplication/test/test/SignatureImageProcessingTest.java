@@ -87,7 +87,7 @@ public class SignatureImageProcessingTest {
 	@Test
 	public void eliminateBackgroundTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		initializeTest("eliminateBackground", null);
+		initializeTest("eliminateBackground");
 		maxTimeDuration = 400;
 		for (int testID = 0; testID < numberOfTests; testID++) {
 			Mat image = Imgcodecs.imread(createInputDataPathPrefix() + testID + imageExtention,
@@ -102,8 +102,8 @@ public class SignatureImageProcessingTest {
 	@Test
 	public void reduceNoiseTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		initializeTest("reduceNoise", null);
-		maxTimeDuration = 3500;
+		initializeTest("reduceNoise");
+		maxTimeDuration = 200;
 		for (int testID = 0; testID < numberOfTests; testID++) {
 			Mat image = Imgcodecs.imread(createInputDataPathPrefix() + testID + imageExtention,
 					Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
@@ -115,8 +115,24 @@ public class SignatureImageProcessingTest {
 	}
 
 	@Test
-	public void normalizeWidthTest() {
-
+	public void normalizeWidthTest() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		initializeTest("normalizeWidth", int.class);
+		maxTimeDuration = 100;
+		for (int testID = 0; testID < numberOfTests; testID++) {
+			Mat image = Imgcodecs.imread(createInputDataPathPrefix() + testID + imageExtention,
+					Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
+			double inputImageHeightToWidthRatio = heightToWidthRatio(image);
+			testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor(image));
+			doCommonTesting(testID,200);
+			image = (Mat) testedClass.getImage();
+			assertTrue(isBinaryImage(image));
+			assertTrue(inputImageHeightToWidthRatio == heightToWidthRatio(image));
+			assertTrue(image.width()==200);
+		}
+	}
+	
+	private double heightToWidthRatio(Mat image) {
+		return image.height()/image.width();
 	}
 
 	@Test
