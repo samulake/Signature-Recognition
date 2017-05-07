@@ -1,22 +1,23 @@
 package preprocessing;
 
-public class SignatureImageProcessor implements ImageProcessor {
-
-	public SignatureImageProcessorImplementor implementor;
-
-	public SignatureImageProcessor(SignatureImageProcessorImplementor implementor){
-		this.implementor = implementor;
+public abstract class SignatureImageProcessor implements ImageProcessor {
+	
+	@Override
+	public void processImage(String sourcePath) {
+		readImage(sourcePath);
+		eliminateBackground();
+		reduceNoise();
+		normalizeWidth(200);
+		thin();
 	}
 
-	public void finalize() throws Throwable {
-
-	}
-
-	public Object getImage(){
-		return this.implementor.getImage();
-	}
-
-	public final void processImage(String sourcePath){
-		implementor.processImage(sourcePath);
-	}
+	public abstract void readImage(String sourcePath);
+	
+	public abstract void eliminateBackground();
+	
+	public abstract void reduceNoise();
+	
+	public abstract void normalizeWidth(int width);
+	
+	public abstract void thin();
 }
