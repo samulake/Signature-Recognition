@@ -20,13 +20,13 @@ public class SignatureImageUtilsTest {
     }
 
     @Test
-    public void checkIfReturnsZerosWhenImageIsWhite() {
+    public void checkIfHorizontalReturnsZerosWhenImageIsWhite() {
 
         int counter = 0;
 
         Mat image = new Mat(SIZE, SIZE, CV_32S);
         fillMatAsSolid(image, WHITE_VALUE);
-        int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
+        int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
         for (int column = 0; column < histogram.length; column++) {
             counter += histogram[column];
         }
@@ -35,13 +35,13 @@ public class SignatureImageUtilsTest {
     }
 
     @Test
-    public void checkIfResurnsOnesWhenImageIsBlack() {
+    public void checkIfHorizontalResurnsOnesWhenImageIsBlack() {
 
         int counter = 0;
 
         Mat image = new Mat(SIZE, SIZE, CV_32S);
         fillMatAsSolid(image, BLACK_VALUE);
-        int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
+        int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
         for (int column = 0; column < histogram.length; column++) {
             counter += histogram[column];
         }
@@ -50,13 +50,72 @@ public class SignatureImageUtilsTest {
     }
 
     @Test
-    public void checkIfCountsCorrectInEye() {
+    public void checkIfHorizontalCountsCorrectInEye() {
 
         int counter = 0;
 
         Mat image = new Mat(SIZE, SIZE, CV_32S);
         for (int i = 0; i < image.height(); i++){
                 image.put(i, i, BLACK_VALUE);
+        }
+        int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
+        for (int column = 0; column < histogram.length; column++) {
+            counter += histogram[column];
+        }
+
+        int[] expectation = new int[SIZE];
+        Arrays.fill(expectation, 1);
+
+        assertEquals("Should return Mat of ones", SIZE, counter);
+        assertArrayEquals("Does not count eye properly", expectation, histogram);
+    }
+
+    @Test
+    public void checkIfHorizontalReturnedMatFileHasCorrectWidth() {
+        int WIDTH = 15;
+        Mat image = new Mat(SIZE, WIDTH, CV_32S);
+        int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
+        assertEquals("Returned Mat shoud have the same width as original", WIDTH, histogram.length);
+    }
+
+    @Test
+    public void checkIfVerticalReturnsZerosWhenImageIsWhite() {
+
+        int counter = 0;
+
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, WHITE_VALUE);
+        int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
+        for (int row = 0; row < histogram.length; row++) {
+            counter += histogram[row];
+        }
+
+        assertEquals("Should return Mat of zeros", 0, counter);
+    }
+
+    @Test
+    public void checkIfVerticalResurnsOnesWhenImageIsBlack() {
+
+        int counter = 0;
+
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, BLACK_VALUE);
+        int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
+        for (int row = 0; row < histogram.length; row++) {
+            counter += histogram[row];
+        }
+
+        assertEquals("Should return Mat of ones", SIZE*SIZE, counter);
+    }
+
+    @Test
+    public void checkIfVerticalCountsCorrectInEye() {
+
+        int counter = 0;
+
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        for (int i = 0; i < image.height(); i++){
+            image.put(i, i, BLACK_VALUE);
         }
         int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
         for (int column = 0; column < histogram.length; column++) {
@@ -71,10 +130,11 @@ public class SignatureImageUtilsTest {
     }
 
     @Test
-    public void checkIfReturnedMatFileHasCorrectWidth() {
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
+    public void checkIfVerticalReturnedMatFileHasCorrectWidth() {
+        int HEIGHT = 15;
+        Mat image = new Mat(HEIGHT, SIZE, CV_32S);
         int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
-        assertEquals("Returned Mat shoud have the same width as original", SIZE, histogram.length);
+        assertEquals("Returned Mat shoud have the same width as original", HEIGHT, histogram.length);
     }
 
     private void fillMatAsSolid(Mat mat, int value){
