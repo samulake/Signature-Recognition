@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import java.util.Arrays;
+import java.util.stream.IntStream;
+
 import static org.junit.Assert.*;
 import static org.opencv.core.CvType.CV_32S;
 
@@ -145,5 +147,34 @@ public class SignatureImageUtilsTest {
         }
     }
 
+    @Test
+    public void normalizedHistogramHasNoZerosOnEdge(){
+        int[] histogram = new int[]{2, 3, 5, 0, 0, 0};
+        int[] normalizedHistogram = SignatureImageUtils.getNormalizedHistogram(histogram, 10);
+        assertTrue(IntStream.of(normalizedHistogram).anyMatch(x -> x != 0));
+    }
 
+    @Test
+    public void normalizedHistogramHOfZerosReturnsZeros(){
+        int[] histogram = new int[]{0, 0, 0};
+        int[] normalizedHistogram = SignatureImageUtils.getNormalizedHistogram(histogram, 10);
+        assertTrue(IntStream.of(normalizedHistogram).allMatch(x -> x == 0));
+    }
+
+    @Test
+    public void notThrowsIndexArrayOutOfBoundException(){
+        int[] histogram = new int[]{1, 2, 3, 4, 5, 6, 7};
+        SignatureImageUtils.getNormalizedHistogram(histogram, 10);
+        SignatureImageUtils.getNormalizedHistogram(histogram, 13);
+        SignatureImageUtils.getNormalizedHistogram(histogram, 17);
+        SignatureImageUtils.getNormalizedHistogram(histogram, 23);
+        SignatureImageUtils.getNormalizedHistogram(histogram, 50);
+    }
+
+    @Test
+    public void returnSmallerHistogramWhenNeed(){
+        int[] histogram = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+        int[] normalizedHistogram = SignatureImageUtils.getNormalizedHistogram(histogram, 6);
+        assertArrayEquals(new int[]{1, 3, 5, 7, 8, 10}, normalizedHistogram);
+    }
 }
