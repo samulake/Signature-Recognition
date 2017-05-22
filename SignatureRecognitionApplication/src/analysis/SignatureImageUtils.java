@@ -6,6 +6,8 @@ import java.util.Arrays;
 
 public class SignatureImageUtils {
 
+    private static int blackValue = 0;
+
     public static int[] getHorizontalHistogram(Mat input) {
         int histogram[] = new int[input.width()];
         Arrays.fill(histogram, 0);
@@ -33,7 +35,7 @@ public class SignatureImageUtils {
     }
 
     private static boolean isBlack(double[] pixel) {
-        return pixel[0] == 255;
+        return pixel[0] == blackValue;
     }
 
 }

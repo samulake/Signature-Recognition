@@ -4,19 +4,46 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import preprocessing.ImageSaverDecorator;
+import preprocessing.OpenCVSignatureImageProcessor;
+import preprocessing.SignatureImageProcessor;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+
 import static org.junit.Assert.*;
 import static org.opencv.core.CvType.CV_32S;
 
 public class SignatureImageUtilsTest {
 
     final int SIZE = 10;
-    final int WHITE_VALUE = 0;
-    final int BLACK_VALUE = 255;
+    final int WHITE_VALUE = 255;
+    final int BLACK_VALUE = 0;
+
+    private final int numberOfTests = 10;
+    private SignatureImageProcessor testedClass;
 
     @BeforeClass
     public static void init() {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+
+    @Test(timeout = 1000 * numberOfTests)
+
+    public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        final String testDataFolderPath = "./testData/";
+        final String imageExtention = ".jpg";
+
+        testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
+
+        for (int testID = 0; testID < numberOfTests; testID++) {
+            String inputFilePath = "./testData/processImage/histogram_test/testImage" + testID + "Result" + testID + imageExtention;
+            testedClass.processImage(inputFilePath);
+            Mat resultImage = (Mat) testedClass.getImage();
+            SignatureImageUtils.getHorizontalHistogram(resultImage);
+            SignatureImageUtils.getVerticalHistogram(resultImage);
+        }
     }
 
     @Test
@@ -46,7 +73,7 @@ public class SignatureImageUtilsTest {
             counter += histogram[column];
         }
 
-        assertEquals("Should return Mat of ones", SIZE*SIZE, counter);
+        assertEquals("Should return Mat of ones", SIZE * SIZE, counter);
     }
 
     @Test
@@ -55,8 +82,9 @@ public class SignatureImageUtilsTest {
         int counter = 0;
 
         Mat image = new Mat(SIZE, SIZE, CV_32S);
-        for (int i = 0; i < image.height(); i++){
-                image.put(i, i, BLACK_VALUE);
+        fillMatAsSolid(image, WHITE_VALUE);
+        for (int i = 0; i < image.height(); i++) {
+            image.put(i, i, BLACK_VALUE);
         }
         int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
         for (int column = 0; column < histogram.length; column++) {
@@ -94,7 +122,7 @@ public class SignatureImageUtilsTest {
     }
 
     @Test
-    public void checkIfVerticalResurnsOnesWhenImageIsBlack() {
+    public void checkIfVerticalReturnsOnesWhenImageIsBlack() {
 
         int counter = 0;
 
@@ -105,7 +133,7 @@ public class SignatureImageUtilsTest {
             counter += histogram[row];
         }
 
-        assertEquals("Should return Mat of ones", SIZE*SIZE, counter);
+        assertEquals("Should return Mat of ones", SIZE * SIZE, counter);
     }
 
     @Test
@@ -114,7 +142,8 @@ public class SignatureImageUtilsTest {
         int counter = 0;
 
         Mat image = new Mat(SIZE, SIZE, CV_32S);
-        for (int i = 0; i < image.height(); i++){
+        fillMatAsSolid(image, WHITE_VALUE);
+        for (int i = 0; i < image.height(); i++) {
             image.put(i, i, BLACK_VALUE);
         }
         int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
@@ -137,13 +166,11 @@ public class SignatureImageUtilsTest {
         assertEquals("Returned Mat shoud have the same width as original", HEIGHT, histogram.length);
     }
 
-    private void fillMatAsSolid(Mat mat, int value){
-        for (int i = 0; i < mat.height(); i++){
-            for(int j = 0; j < mat.width(); j++){
+    private void fillMatAsSolid(Mat mat, int value) {
+        for (int i = 0; i < mat.height(); i++) {
+            for (int j = 0; j < mat.width(); j++) {
                 mat.put(i, j, value);
             }
         }
     }
-
-
 }
