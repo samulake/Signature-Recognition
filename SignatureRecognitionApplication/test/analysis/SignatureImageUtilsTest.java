@@ -19,6 +19,46 @@ public class SignatureImageUtilsTest {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
+    //Edge point number test
+    @Test
+    public void whenImageIsBlackReturnsZeroEdgePoints(){
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, WHITE_VALUE);
+        int counter = SignatureImageUtils.getEdgePointNumber(image);
+        assertEquals("Should return Mat of zeros", 0, counter);
+    }
+
+    @Test
+    public void whenImageIsWhiteReturnsZeroEdgePoints(){
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, BLACK_VALUE);
+        int counter = SignatureImageUtils.getEdgePointNumber(image);
+        assertEquals("Should return Mat of zeros", 0, counter);
+    }
+
+    @Test
+    public void whenImageHasOneBlackPixelReturnsOneEdgePoint(){
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, WHITE_VALUE);
+        image.put(3, 3, BLACK_VALUE);
+        int counter = SignatureImageUtils.getEdgePointNumber(image);
+        assertEquals("Should be only one pixe which has no neighbours", 0, counter);
+    }
+
+    @Test
+    public void whenImageHasLineOfPixelsReturnsTwoEdgePoints(){
+        //TODO po merge beda ustawione dobre wartosci WHITE_VALUE i BLACK_VALUE
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, WHITE_VALUE);
+        image.put(3, 3, BLACK_VALUE);
+        image.put(3, 4, BLACK_VALUE);
+        image.put(3, 5, BLACK_VALUE);
+        image.put(3, 6, BLACK_VALUE);
+        image.put(3, 7, BLACK_VALUE);
+        int counter = SignatureImageUtils.getEdgePointNumber(image);
+        assertEquals("Should be only one pixe which has no neighbours", 2, counter);
+    }
+
     @Test
     public void checkIfHorizontalReturnsZerosWhenImageIsWhite() {
 

@@ -1,5 +1,6 @@
 package preprocessing;
 
+import analysis.SignatureImageUtils;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -68,7 +69,7 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 			for (int x = 1; x + 1 < image.rows(); x++) {
 				for (int y = 1; y + 1 < image.cols(); y++) {
 					int numberOfWhiteToBlackTransitions = countNumberOfWhiteToBlackTransitionsAroundPixel(x, y);
-					int numberOfBlackNeighbourPixels = countBlackNeighbourPixels(x, y);
+					int numberOfBlackNeighbourPixels = SignatureImageUtils.countBlackNeighbourPixels(x, y, this.image);
 					if (image.get(x, y)[0] == 0 && 2 <= numberOfBlackNeighbourPixels
 							&& numberOfBlackNeighbourPixels <= 6 && numberOfWhiteToBlackTransitions == 1
 							&& atLeastOneWhitePixel(image.get(x - 1, y)[0], image.get(x, y + 1)[0],
@@ -237,37 +238,6 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 
 	private boolean isZeroToOneTransition(double pixel, double nextNeighbour) {
 		return pixel == 255 && nextNeighbour == 0;
-	}
-
-	private int countBlackNeighbourPixels(int x, int y) {
-		int counter = 0;
-		if (isBlack(this.image.get(x - 1, y)[0])) {
-			counter++;
-		}
-		if (isBlack(this.image.get(x - 1, y + 1)[0])) {
-			counter++;
-		}
-		if (isBlack(this.image.get(x + 1, y + 1)[0])) {
-			counter++;
-		}
-		if (isBlack(this.image.get(x + 1, y)[0])) {
-			counter++;
-		}
-		if (isBlack(this.image.get(x + 1, y - 1)[0])) {
-			counter++;
-		}
-		if (isBlack(this.image.get(x, y - 1)[0])) {
-			counter++;
-		}
-		if (isBlack(this.image.get(x - 1, y - 1)[0])) {
-			counter++;
-		}
-
-		return counter;
-	}
-
-	private boolean isBlack(double pixelValue) {
-		return pixelValue == 0;
 	}
 
 	private void reduceImageTwiceIfSizeIsOver(int allowedMaxwidth) {
