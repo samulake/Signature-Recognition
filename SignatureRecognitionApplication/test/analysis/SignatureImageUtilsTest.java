@@ -46,6 +46,69 @@ public class SignatureImageUtilsTest {
         }
     }
 
+    //Horizontal and Vertical center
+    @Test
+    public void whenImageIsWhiteCenterIsInZero(){
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, WHITE_VALUE);
+        assertEquals("Should return x = 0", 0, SignatureImageUtils.getHorizontalCenter(image));
+        assertEquals("Should return y = 0", 0, SignatureImageUtils.getVerticalCenter(image));
+    }
+
+    @Test
+    public void whenImageIsBlackCenterIsInTheMiddle(){
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, BLACK_VALUE);
+        assertEquals(SIZE/2, SignatureImageUtils.getHorizontalCenter(image), 1);
+        assertEquals(SIZE/2, SignatureImageUtils.getVerticalCenter(image), 1);
+    }
+
+    @Test
+    public void whenImageHasLineReturnItsMiddle(){
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, WHITE_VALUE);
+        image.put(3, 3, BLACK_VALUE);
+        image.put(3, 4, BLACK_VALUE);
+        image.put(3, 5, BLACK_VALUE);
+        image.put(3, 6, BLACK_VALUE);
+        image.put(3, 7, BLACK_VALUE);
+        assertEquals(5, SignatureImageUtils.getHorizontalCenter(image));
+        assertEquals(3, SignatureImageUtils.getVerticalCenter(image));
+    }
+
+    @Test
+    public void whenImageHasMiterLineReturnItsMiddle(){
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, WHITE_VALUE);
+        image.put(2, 2, BLACK_VALUE);
+        image.put(3, 3, BLACK_VALUE);
+        image.put(4, 4, BLACK_VALUE);
+        image.put(5, 5, BLACK_VALUE);
+        image.put(6, 6, BLACK_VALUE);
+        assertEquals(4, SignatureImageUtils.getHorizontalCenter(image));
+        assertEquals(4, SignatureImageUtils.getVerticalCenter(image));
+    }
+
+    @Test
+    public void whenImageHasTwoMiterLinesReturnItsMiddle(){
+        Mat image = new Mat(SIZE, SIZE, CV_32S);
+        fillMatAsSolid(image, WHITE_VALUE);
+        image.put(2, 2, BLACK_VALUE);
+        image.put(3, 3, BLACK_VALUE);
+        image.put(4, 4, BLACK_VALUE);
+        image.put(5, 5, BLACK_VALUE);
+        image.put(6, 6, BLACK_VALUE);
+
+        image.put(2, 4, BLACK_VALUE);
+        image.put(3, 5, BLACK_VALUE);
+        image.put(4, 6, BLACK_VALUE);
+        image.put(5, 7, BLACK_VALUE);
+        image.put(6, 8, BLACK_VALUE);
+
+        assertEquals(5, SignatureImageUtils.getHorizontalCenter(image));
+        assertEquals(4, SignatureImageUtils.getVerticalCenter(image));
+    }
+
     //Edge point number test
     @Test
     public void whenImageIsBlackReturnsZeroEdgePoints(){

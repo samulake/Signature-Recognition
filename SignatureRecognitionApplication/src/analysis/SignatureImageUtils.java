@@ -34,6 +34,33 @@ public class SignatureImageUtils {
         return histogram;
     }
 
+    public static int getHorizontalCenter(Mat input){
+
+        int[] horizontalHistogram = getHorizontalHistogram(input);
+        int weight = 0;
+        int sumOfPixels = 0;
+        for (int i = 0; i < horizontalHistogram.length; i++) {
+            weight += i * horizontalHistogram[i];
+            sumOfPixels += horizontalHistogram[i];
+        }
+
+        return sumOfPixels == 0 ? 0 : Math.round(weight/sumOfPixels);
+    }
+
+    public static int getVerticalCenter(Mat input){
+
+        int[] verticalHistogram = getVerticalHistogram(input);
+        int weight = 0;
+        int sumOfPixels = 0;
+        for (int i = 0; i < verticalHistogram.length; i++) {
+            weight += i * verticalHistogram[i];
+            sumOfPixels += verticalHistogram[i];
+        }
+
+        return sumOfPixels == 0 ? 0 : Math.round(weight/sumOfPixels);
+    }
+
+
     public static int getEdgePointNumber(Mat input) {
         int edgePointNumber = 0;
         for (int rowIndex = 0; rowIndex < input.height(); rowIndex++) {
@@ -77,7 +104,6 @@ public class SignatureImageUtils {
         return counter;
     }
 
-    //TODO po megre powinny byc ustawione popawne wartości na 0
     public static boolean isBlack(double pixelValue) {
         return pixelValue == 0;
     }
