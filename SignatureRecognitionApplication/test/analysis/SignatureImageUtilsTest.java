@@ -12,6 +12,8 @@ import preprocessing.SignatureImageProcessor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
+import java.util.stream.IntStream;
+
 import static org.junit.Assert.*;
 import static org.opencv.core.CvType.CV_32S;
 
