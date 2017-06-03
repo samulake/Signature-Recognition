@@ -2,12 +2,17 @@ package test;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Method;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import analysis.OpenCVSignatureImageFeatureExtractorImplementor;
 
@@ -32,18 +37,24 @@ public class OpenCVSignatureImageFeatureExtractorImplementorTest {
 	}
 
 	@Test
-	public void numberOfBlackPixelsPerRegionTest() {
-		fail("Not yet implemented");
-	}
-	
-	@Test
-	public void splitMatrixTest() {
-		fail("Not yet implemented");
-	}
-	
-	@Test
-	public void countBlackPixelsTest() {
-		fail("Not yet implemented");
+	public void getLowestBlackPixelTest() {
+		OpenCVSignatureImageFeatureExtractorImplementor o = new OpenCVSignatureImageFeatureExtractorImplementor();
+		Mat img;
+		img = Imgcodecs.imread("./testData/testy2.png");		
+		Point p = o.getLowestBlackPixel(img);
+		Point ap = new Point(113, 53);
+		assertEquals(ap, p);
 	}
 
+	@Test
+	public void getHigestBlackPixelTest() {
+		OpenCVSignatureImageFeatureExtractorImplementor o = new OpenCVSignatureImageFeatureExtractorImplementor();
+		Mat img;
+		img = Imgcodecs.imread("./testData/testy2.png");		
+		Point p = o.getHighestBlackPixel(img);
+		Point ap = new Point(17, 0);
+		assertEquals(ap, p);
+	}
+	
+	
 }
