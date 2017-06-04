@@ -41,9 +41,6 @@ public class SignatureImageFeatureExtractorImplementor implements SignatureImage
 			element.put(0, 0, getPattern(i));
 			Mat pimg = new Mat();
 			Imgproc.erode( img, pimg, element );
-			StringBuilder sb = new StringBuilder();
-			sb.append("./testData/res").append(i).append(".png");
-			Imgcodecs.imwrite(sb.toString(), pimg);
 			if (countBlackPixels(pimg) < tilt[1]) {
 				tilt[0] = i;
 				tilt[1] = countBlackPixels(pimg);
