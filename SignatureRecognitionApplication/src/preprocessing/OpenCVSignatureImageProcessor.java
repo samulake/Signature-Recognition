@@ -1,6 +1,8 @@
 package preprocessing;
 
 import analysis.SignatureImageUtils;
+
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -21,23 +23,26 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 	public Object getImage() {
 		return this.image;
 	}
-	
+
 	@Override
 	public void readImage(String sourcePath) {
 		this.image = Imgcodecs.imread(sourcePath, Imgcodecs.CV_LOAD_IMAGE_GRAYSCALE);
-		reduceImageTwiceIfSizeIsOver(500);
+		reduceImageTwiceIfSizeIsOver(300);
+		for (int x = 1; x + 1 < image.rows(); x++) {
+			for (int y = 1; y + 1 < image.cols(); y++) {
+				this.image.put(x, y, this.image.get(x, y)[0]);
+			}
+		}
 	}
 
 	@Override
 	public void eliminateBackground() {
-		blurImage();
 		doThresholdingBasedOnPixelBrightnessGradients();
 	}
 
 	@Override
 	public void reduceNoise() {
-		doBoxFilter(-1, new Size(2,2));
-		doThresholdingBasedOnPixelBrightnessGradients();
+		blurImage();
 	}
 
 	@Override
@@ -85,7 +90,7 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 	}
 
 	private void blurImage() {
-		doBilateralFilter(-1, 30, 7);
+		doBilateralFilter(-1, 6, 3);
 	}
 
 	private double countThresholdBasedOnBrightnessGradient() {
@@ -108,7 +113,7 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 		Imgproc.bilateralFilter(this.image, temporaryMat, diameter, sigmaColor, sigmaSpace);
 		temporaryMat.copyTo(this.image);
 	}
-	
+
 	private void doBoxFilter(int depth, Size kernelSize) {
 		temporaryMat = new Mat();
 		Imgproc.boxFilter(this.image, temporaryMat, depth, kernelSize);
@@ -242,7 +247,7 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 
 	private void reduceImageTwiceIfSizeIsOver(int allowedMaxwidth) {
 		if (this.image.width() > allowedMaxwidth) {
-			resizeImageTo(500);
+			resizeImageTo(allowedMaxwidth);
 		}
 	}
 }
