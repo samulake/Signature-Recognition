@@ -13,7 +13,7 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 	private Mat temporaryMat;
 
 	public OpenCVSignatureImageProcessor() {
-
+		temporaryMat = new Mat();
 	}
 
 	public OpenCVSignatureImageProcessor(Mat image) {
