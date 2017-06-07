@@ -51,7 +51,7 @@ public class SignatureImageUtils {
         return edgePointNumber;
     }
 
-    private static int countBlackNeighbourPixels(int row, int col, Mat image) {
+    public static int countBlackNeighbourPixels(int row, int col, Mat image) {
         int counter = 0;
         int maxRowIndex = image.height() - 1;
         int maxColIndex = image.width() -1 ;
@@ -226,7 +226,7 @@ public class SignatureImageUtils {
 		return p;
 	}
 
-	private static Point getLowestBlackPixel(Mat image) {
+	public static Point getLowestBlackPixel(Mat image) {
 		double[] pixel = null;
 		int i, j = 0;
 		Point p = null;

@@ -4,6 +4,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import preprocessing.ImageSaverDecorator;
 import preprocessing.OpenCVSignatureImageProcessor;
@@ -18,201 +19,217 @@ import static org.junit.Assert.*;
 import static org.opencv.core.CvType.CV_32S;
 
 public class SignatureImageUtilsTest {
+	final int SIZE = 10;
+	final int WHITE_VALUE = 255;
+	final int BLACK_VALUE = 0;
 
-    final int SIZE = 10;
-    final int WHITE_VALUE = 255;
-    final int BLACK_VALUE = 0;
+	private final int numberOfTests = 10;
+	private SignatureImageProcessor testedClass;
+	private final String testDataFolderPath = "./testData/";
+	private final String imageExtention = ".png";
 
-    private final int numberOfTests = 10;
-    private SignatureImageProcessor testedClass;
+	@BeforeClass
+	public static void init() {
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+	}
 
-    @BeforeClass
-    public static void init() {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
+	@Test(timeout = 1000 * numberOfTests)
 
-    @Test(timeout = 1000 * numberOfTests)
+	public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
 
-    public void testProcessImage() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        final String testDataFolderPath = "./testData/";
-        final String imageExtention = ".jpg";
+		for (int testID = 0; testID < numberOfTests; testID++) {
+			String inputFilePath = "./testData/processImage/histogram_test/testImage" + testID + "Result" + testID
+					+ imageExtention;
+			testedClass.processImage(inputFilePath);
+			Mat resultImage = (Mat) testedClass.getImage();
+			SignatureImageUtils.getHorizontalHistogram(resultImage);
+			SignatureImageUtils.getVerticalHistogram(resultImage);
+		}
+	}
 
-        testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
+	@Test
+	public void whenImageIsBlackReturnsZeroEdgePoints() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, WHITE_VALUE);
+		int counter = SignatureImageUtils.getEdgePointNumber(image);
+		assertEquals("Should return Mat of zeros", 0, counter);
+	}
 
-        for (int testID = 0; testID < numberOfTests; testID++) {
-            String inputFilePath = "./testData/processImage/histogram_test/testImage" + testID + "Result" + testID + imageExtention;
-            testedClass.processImage(inputFilePath);
-            Mat resultImage = (Mat) testedClass.getImage();
-            SignatureImageUtils.getHorizontalHistogram(resultImage);
-            SignatureImageUtils.getVerticalHistogram(resultImage);
-        }
-    }
+	@Test
+	public void whenImageIsWhiteReturnsZeroEdgePoints() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, BLACK_VALUE);
+		int counter = SignatureImageUtils.getEdgePointNumber(image);
+		assertEquals("Should return Mat of zeros", 0, counter);
+	}
 
-    //Edge point number test
-    @Test
-    public void whenImageIsBlackReturnsZeroEdgePoints(){
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, WHITE_VALUE);
-        int counter = SignatureImageUtils.getEdgePointNumber(image);
-        assertEquals("Should return Mat of zeros", 0, counter);
-    }
+	@Test
+	public void whenImageHasOneBlackPixelReturnsOneEdgePoint() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, WHITE_VALUE);
+		image.put(3, 3, BLACK_VALUE);
+		int counter = SignatureImageUtils.getEdgePointNumber(image);
+		assertEquals("Should be only one pixe which has no neighbours", 0, counter);
+	}
 
-    @Test
-    public void whenImageIsWhiteReturnsZeroEdgePoints(){
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, BLACK_VALUE);
-        int counter = SignatureImageUtils.getEdgePointNumber(image);
-        assertEquals("Should return Mat of zeros", 0, counter);
-    }
+	@Test
+	public void whenImageHasLineOfPixelsReturnsTwoEdgePoints() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, WHITE_VALUE);
+		image.put(3, 3, BLACK_VALUE);
+		image.put(3, 4, BLACK_VALUE);
+		image.put(3, 5, BLACK_VALUE);
+		image.put(3, 6, BLACK_VALUE);
+		image.put(3, 7, BLACK_VALUE);
+		int counter = SignatureImageUtils.getEdgePointNumber(image);
+		assertEquals("Should be only one pixe which has no neighbours", 2, counter);
+	}
 
-    @Test
-    public void whenImageHasOneBlackPixelReturnsOneEdgePoint(){
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, WHITE_VALUE);
-        image.put(3, 3, BLACK_VALUE);
-        int counter = SignatureImageUtils.getEdgePointNumber(image);
-        assertEquals("Should be only one pixe which has no neighbours", 0, counter);
-    }
+	@Test
+	public void checkIfHorizontalReturnsZerosWhenImageIsWhite() {
 
-    @Test
-    public void whenImageHasLineOfPixelsReturnsTwoEdgePoints(){
-        //TODO po merge beda ustawione dobre wartosci WHITE_VALUE i BLACK_VALUE
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, WHITE_VALUE);
-        image.put(3, 3, BLACK_VALUE);
-        image.put(3, 4, BLACK_VALUE);
-        image.put(3, 5, BLACK_VALUE);
-        image.put(3, 6, BLACK_VALUE);
-        image.put(3, 7, BLACK_VALUE);
-        int counter = SignatureImageUtils.getEdgePointNumber(image);
-        assertEquals("Should be only one pixe which has no neighbours", 2, counter);
-    }
+		int counter = 0;
 
-    @Test
-    public void checkIfHorizontalReturnsZerosWhenImageIsWhite() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, WHITE_VALUE);
+		int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
+		for (int column = 0; column < histogram.length; column++) {
+			counter += histogram[column];
+		}
 
-        int counter = 0;
+		assertEquals("Should return Mat of zeros", 0, counter);
+	}
 
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, WHITE_VALUE);
-        int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
-        for (int column = 0; column < histogram.length; column++) {
-            counter += histogram[column];
-        }
+	@Test
+	public void checkIfHorizontalResurnsOnesWhenImageIsBlack() {
 
-        assertEquals("Should return Mat of zeros", 0, counter);
-    }
+		int counter = 0;
 
-    @Test
-    public void checkIfHorizontalResurnsOnesWhenImageIsBlack() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, BLACK_VALUE);
+		int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
+		for (int column = 0; column < histogram.length; column++) {
+			counter += histogram[column];
+		}
 
-        int counter = 0;
+		assertEquals("Should return Mat of ones", SIZE * SIZE, counter);
+	}
 
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, BLACK_VALUE);
-        int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
-        for (int column = 0; column < histogram.length; column++) {
-            counter += histogram[column];
-        }
+	@Test
+	public void checkIfHorizontalCountsCorrectInEye() {
 
-        assertEquals("Should return Mat of ones", SIZE * SIZE, counter);
-    }
+		int counter = 0;
 
-    @Test
-    public void checkIfHorizontalCountsCorrectInEye() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, WHITE_VALUE);
+		for (int i = 0; i < image.height(); i++) {
+			image.put(i, i, BLACK_VALUE);
+		}
+		int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
+		for (int column = 0; column < histogram.length; column++) {
+			counter += histogram[column];
+		}
 
-        int counter = 0;
+		int[] expectation = new int[SIZE];
+		Arrays.fill(expectation, 1);
 
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, WHITE_VALUE);
-        for (int i = 0; i < image.height(); i++) {
-            image.put(i, i, BLACK_VALUE);
-        }
-        int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
-        for (int column = 0; column < histogram.length; column++) {
-            counter += histogram[column];
-        }
+		assertEquals("Should return Mat of ones", SIZE, counter);
+		assertArrayEquals("Does not count eye properly", expectation, histogram);
+	}
 
-        int[] expectation = new int[SIZE];
-        Arrays.fill(expectation, 1);
+	@Test
+	public void checkIfHorizontalReturnedMatFileHasCorrectWidth() {
+		int WIDTH = 15;
+		Mat image = new Mat(SIZE, WIDTH, CV_32S);
+		int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
+		assertEquals("Returned Mat shoud have the same width as original", WIDTH, histogram.length);
+	}
 
-        assertEquals("Should return Mat of ones", SIZE, counter);
-        assertArrayEquals("Does not count eye properly", expectation, histogram);
-    }
+	@Test
+	public void checkIfVerticalReturnsZerosWhenImageIsWhite() {
 
-    @Test
-    public void checkIfHorizontalReturnedMatFileHasCorrectWidth() {
-        int WIDTH = 15;
-        Mat image = new Mat(SIZE, WIDTH, CV_32S);
-        int[] histogram = SignatureImageUtils.getHorizontalHistogram(image);
-        assertEquals("Returned Mat shoud have the same width as original", WIDTH, histogram.length);
-    }
+		int counter = 0;
 
-    @Test
-    public void checkIfVerticalReturnsZerosWhenImageIsWhite() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, WHITE_VALUE);
+		int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
+		for (int row = 0; row < histogram.length; row++) {
+			counter += histogram[row];
+		}
 
-        int counter = 0;
+		assertEquals("Should return Mat of zeros", 0, counter);
+	}
 
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, WHITE_VALUE);
-        int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
-        for (int row = 0; row < histogram.length; row++) {
-            counter += histogram[row];
-        }
+	@Test
+	public void checkIfVerticalReturnsOnesWhenImageIsBlack() {
 
-        assertEquals("Should return Mat of zeros", 0, counter);
-    }
+		int counter = 0;
 
-    @Test
-    public void checkIfVerticalReturnsOnesWhenImageIsBlack() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, BLACK_VALUE);
+		int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
+		for (int row = 0; row < histogram.length; row++) {
+			counter += histogram[row];
+		}
 
-        int counter = 0;
+		assertEquals("Should return Mat of ones", SIZE * SIZE, counter);
+	}
 
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, BLACK_VALUE);
-        int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
-        for (int row = 0; row < histogram.length; row++) {
-            counter += histogram[row];
-        }
+	@Test
+	public void checkIfVerticalCountsCorrectInEye() {
 
-        assertEquals("Should return Mat of ones", SIZE * SIZE, counter);
-    }
+		int counter = 0;
 
-    @Test
-    public void checkIfVerticalCountsCorrectInEye() {
+		Mat image = new Mat(SIZE, SIZE, CV_32S);
+		fillMatAsSolid(image, WHITE_VALUE);
+		for (int i = 0; i < image.height(); i++) {
+			image.put(i, i, BLACK_VALUE);
+		}
+		int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
+		for (int column = 0; column < histogram.length; column++) {
+			counter += histogram[column];
+		}
 
-        int counter = 0;
+		int[] expectation = new int[SIZE];
+		Arrays.fill(expectation, 1);
 
-        Mat image = new Mat(SIZE, SIZE, CV_32S);
-        fillMatAsSolid(image, WHITE_VALUE);
-        for (int i = 0; i < image.height(); i++) {
-            image.put(i, i, BLACK_VALUE);
-        }
-        int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
-        for (int column = 0; column < histogram.length; column++) {
-            counter += histogram[column];
-        }
+		assertEquals("Should return Mat of ones", SIZE, counter);
+		assertArrayEquals("Does not count eye properly", expectation, histogram);
+	}
 
-        int[] expectation = new int[SIZE];
-        Arrays.fill(expectation, 1);
+	@Test
+	public void checkIfVerticalReturnedMatFileHasCorrectWidth() {
+		int HEIGHT = 15;
+		Mat image = new Mat(HEIGHT, SIZE, CV_32S);
+		int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
+		assertEquals("Returned Mat shoud have the same width as original", HEIGHT, histogram.length);
+	}
 
-        assertEquals("Should return Mat of ones", SIZE, counter);
-        assertArrayEquals("Does not count eye properly", expectation, histogram);
-    }
+	private void fillMatAsSolid(Mat mat, int value) {
+		for (int i = 0; i < mat.height(); i++) {
+			for (int j = 0; j < mat.width(); j++) {
+				mat.put(i, j, value);
+			}
+		}
+	}
 
-    @Test
-    public void checkIfVerticalReturnedMatFileHasCorrectWidth() {
-        int HEIGHT = 15;
-        Mat image = new Mat(HEIGHT, SIZE, CV_32S);
-        int[] histogram = SignatureImageUtils.getVerticalHistogram(image);
-        assertEquals("Returned Mat shoud have the same width as original", HEIGHT, histogram.length);
-    }
+	@Test
+	public void getLowestBlackPixelTest() {
+		Mat image;
+		image = Imgcodecs.imread("./testData/testy2.png");
+		Point point = SignatureImageUtils.getLowestBlackPixel(image);
+		Point expectedPoint = new Point(113, 53);
+		assertEquals(expectedPoint, point);
+	}
 
-    private void fillMatAsSolid(Mat mat, int value) {
-        for (int i = 0; i < mat.height(); i++) {
-            for (int j = 0; j < mat.width(); j++) {
-                mat.put(i, j, value);
-            }
-        }
-    }
+	@Test
+	public void getHigestBlackPixelTest() {
+		Mat image;
+		image = Imgcodecs.imread("./testData/testy2.png");
+		Point point = SignatureImageUtils.getHighestBlackPixel(image);
+		Point expectedPoint = new Point(17, 0);
+		assertEquals(expectedPoint, point);
+	}
 }
