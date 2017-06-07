@@ -13,7 +13,7 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 	private Mat temporaryMat;
 
 	public OpenCVSignatureImageProcessor() {
-		temporaryMat = new Mat();
+
 	}
 
 	public OpenCVSignatureImageProcessor(Mat image) {
@@ -42,7 +42,47 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 
 	@Override
 	public void reduceNoise() {
-		blurImage();
+
+		for (int x = 0; x + 1 < image.rows(); x++) {
+			for (int y = 0; y + 1 < image.cols(); y++) {
+				if (SignatureImageUtils.isBlack(this.image.get(x, y))) {
+					boolean allWhiteNeighbours = checkIfNeighboursAreAllWhite(x, y);
+					if (allWhiteNeighbours) {
+						this.image.put(x, y, 255);
+					}
+				}
+			}
+		}
+		
+	}
+
+	private boolean checkIfNeighboursAreAllWhite(int x, int y) {
+
+		if (SignatureImageUtils.isBlack(image.get(x - 1, y)[0]))
+			return false;
+
+		if (SignatureImageUtils.isBlack(this.image.get(x - 1, y + 1)[0]))
+			return false;
+
+		if (SignatureImageUtils.isBlack(this.image.get(x, y + 1)[0]))
+			return false;
+
+		if (SignatureImageUtils.isBlack(this.image.get(x + 1, y + 1)[0]))
+			return false;
+
+		if (SignatureImageUtils.isBlack(this.image.get(x + 1, y)[0]))
+			return false;
+
+		if (SignatureImageUtils.isBlack(this.image.get(x + 1, y - 1)[0]))
+			return false;
+
+		if (SignatureImageUtils.isBlack(this.image.get(x, y - 1)[0]))
+			return false;
+
+		if (SignatureImageUtils.isBlack(this.image.get(x - 1, y - 1)[0]))
+			return false;
+
+		return true;
 	}
 
 	@Override
@@ -64,6 +104,7 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 		Imgproc.threshold(this.image, temporaryMat, countThresholdBasedOnBrightnessGradient(), 256,
 				Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
+		
 	}
 
 	@Override
@@ -122,6 +163,7 @@ public class OpenCVSignatureImageProcessor extends SignatureImageProcessor {
 
 	private void doThresholdingBasedOnPixelBrightnessGradients() {
 		double threshold = countThresholdBasedOnBrightnessGradient();
+		temporaryMat = new Mat();
 		Imgproc.threshold(this.image, temporaryMat, threshold, 256, Imgproc.THRESH_BINARY);
 		temporaryMat.copyTo(this.image);
 	}
