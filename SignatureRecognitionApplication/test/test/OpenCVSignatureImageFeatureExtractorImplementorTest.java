@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import analysis.OpenCVSignatureImageFeatureExtractorImplementor;
 
@@ -31,19 +33,18 @@ public class OpenCVSignatureImageFeatureExtractorImplementorTest {
 	public void tearDown() throws Exception {
 	}
 
-	@Test
-	public void numberOfBlackPixelsPerRegionTest() {
-		fail("Not yet implemented");
-	}
-	
-	@Test
-	public void splitMatrixTest() {
-		fail("Not yet implemented");
-	}
-	
-	@Test
-	public void countBlackPixelsTest() {
-		fail("Not yet implemented");
-	}
 
+	@Test
+	public void getHeigthWidthRatioTest() {
+		OpenCVSignatureImageFeatureExtractorImplementor o = new OpenCVSignatureImageFeatureExtractorImplementor();
+		Mat img;
+		
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);		
+		img = Imgcodecs.imread("./testData/sign2.jpg");
+		   		
+		float expected = (float) 104 / (float) 195;
+		float actual = o.getHeightWidthRatio(img);
+		
+		assertEquals(String.valueOf(expected), String.valueOf(actual));
+	}
 }
