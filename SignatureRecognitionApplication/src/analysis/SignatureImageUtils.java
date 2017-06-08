@@ -77,7 +77,7 @@ public class SignatureImageUtils {
         return edgePointNumber;
     }
 
-    private static int countBlackNeighbourPixels(int row, int col, Mat image) {
+    public static int countBlackNeighbourPixels(int row, int col, Mat image) {
         int counter = 0;
         int maxRowIndex = image.height() - 1;
         int maxColIndex = image.width() -1 ;
@@ -112,11 +112,11 @@ public class SignatureImageUtils {
         return pixelValue == 0;
     }
 
-    private static boolean isBlack(double[] pixel) {
+    public static boolean isBlack(double[] pixel) {
         return pixel[0] == blackValue;
     }
     
-    public int getSignatureTilt(Mat img) {
+    public static int getSignatureTilt(Mat img) {
 		int[] tilt = { 0, img.height() * img.width() };
 		Mat element = Mat.zeros(10, 10, CvType.CV_8U);
 		for (int i = 1; i <= 16; i++) {
@@ -131,7 +131,7 @@ public class SignatureImageUtils {
 		return tilt[0];
 	}
 
-	private double[] getPattern(int i) {
+	private static double[] getPattern(int i) {
 
 		switch (i) {
 		case 1:

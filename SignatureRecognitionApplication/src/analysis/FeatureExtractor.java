@@ -4,6 +4,6 @@ import weka.core.Instance;
 
 public interface FeatureExtractor {
 
-	public Instance extractFeatures();
+	public Instance extractFeatures(String imageFilePath);
 
 }
