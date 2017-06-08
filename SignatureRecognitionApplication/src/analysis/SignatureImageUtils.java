@@ -304,4 +304,45 @@ public class SignatureImageUtils {
 		}
 		return regionList;		
 	}
+	
+	private static Point getLeftestBlackPixel(Mat image) {
+		double [] pixel = null; 
+		int i, j = 0;
+		Point p = null;
+		
+		for (i = 0; i < image.width(); i++) {
+			for (j = 0; j < image.height(); j++){
+				pixel = image.get(j, i);
+				if (pixel[0] == 0.0f) {
+					p = new Point(i, j);
+					return p;
+				}
+			}
+		}
+		
+		return p;
+	}
+	
+	private static Point getRightestBlackPixel(Mat image) {
+		double [] pixel = null; 
+		int i, j = 0;
+		Point p = null;
+		
+		for (i = image.width() - 1; i >= 0 ; i--) {
+			for (j = 0; j < image.height(); j++){
+				pixel = image.get(j, i);
+				if (pixel[0] == 0.0f) {
+					p = new Point(i, j);
+					return p;
+				}
+			}
+		}
+		
+		return p;
+	}
+	
+	
+	public static float getHeightWidthRatio(Mat image) {
+		return (float) (getLowestBlackPixel(image).y - getHighestBlackPixel(image).y) / (float) (getRightestBlackPixel(image).x - getLeftestBlackPixel(image).x);
+	}
 }

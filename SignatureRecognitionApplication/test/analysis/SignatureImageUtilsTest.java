@@ -232,4 +232,17 @@ public class SignatureImageUtilsTest {
 		Point expectedPoint = new Point(17, 0);
 		assertEquals(expectedPoint, point);
 	}
+	
+	@Test
+	public void getHeigthWidthRatioTest() {
+		Mat img;
+		
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);		
+		img = Imgcodecs.imread("./testData/sign2.png");
+		   		
+		float expected = (float) 104 / (float) 195;
+		float actual = SignatureImageUtils.getHeightWidthRatio(img);
+		
+		assertEquals(String.valueOf(expected), String.valueOf(actual));
+	}
 }
