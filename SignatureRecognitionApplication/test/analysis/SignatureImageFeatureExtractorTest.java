@@ -1,8 +1,9 @@
-package test;
+package analysis;
 
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,10 +15,11 @@ import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 
-import analysis.OpenCVSignatureImageFeatureExtractorImplementor;
+import weka.core.Attribute;
+import weka.core.Instances;
 
-public class OpenCVSignatureImageFeatureExtractorImplementorTest {
-	private OpenCVSignatureImageFeatureExtractorImplementor testedClass = new OpenCVSignatureImageFeatureExtractorImplementor();
+public class SignatureImageFeatureExtractorTest {
+	private SignatureImageFeatureExtractor testedClass;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -34,27 +36,18 @@ public class OpenCVSignatureImageFeatureExtractorImplementorTest {
 
 	@After
 	public void tearDown() throws Exception {
-	}
-
-	@Test
-	public void getLowestBlackPixelTest() {
-		OpenCVSignatureImageFeatureExtractorImplementor o = new OpenCVSignatureImageFeatureExtractorImplementor();
-		Mat img;
-		img = Imgcodecs.imread("./testData/testy2.png");		
-		Point p = o.getLowestBlackPixel(img);
-		Point ap = new Point(113, 53);
-		assertEquals(ap, p);
-	}
-
-	@Test
-	public void getHigestBlackPixelTest() {
-		OpenCVSignatureImageFeatureExtractorImplementor o = new OpenCVSignatureImageFeatureExtractorImplementor();
-		Mat img;
-		img = Imgcodecs.imread("./testData/testy2.png");		
-		Point p = o.getHighestBlackPixel(img);
-		Point ap = new Point(17, 0);
-		assertEquals(ap, p);
+		
 	}
 	
-	
+	@Test
+	public void extractFeaturesTest() {
+		String inputDataPathPrefix = "./testData/processImage/testImage";
+		Instances instances = new Instances(SignatureAttributes.RELATION_NAME,(ArrayList<Attribute>) SignatureAttributes.attributes(), 0);
+		testedClass = new SignatureImageFeatureExtractor();
+		for (int testID = 0; testID < 10; testID++) {
+			instances.add(testedClass.extractFeatures(inputDataPathPrefix + testID + "Result" + testID + ".png"));
+		}
+		
+		System.out.println(instances);
+	}
 }
