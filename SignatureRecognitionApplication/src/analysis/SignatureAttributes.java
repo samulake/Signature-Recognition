@@ -16,6 +16,7 @@ public class SignatureAttributes {
 	public static final String LOWEST_PIXEL_X = "the lowest pixel x coordinate";
 	public static final String TILT_PATTERN = "tiltPattern";
 	public static final String EDGE_POINTS = "edge points";
+	public static final String SIGNATURE_OWNER = "signature owner";
 	
 	public static final String RELATION_NAME = "signature features";
 	
@@ -29,12 +30,12 @@ public class SignatureAttributes {
 		signatureAttributeList.add(new Attribute(HIGHEST_PIXEL_X));
 		signatureAttributeList.add(new Attribute(LOWEST_PIXEL_X));
 		
-		List<String> tiltPatternList = new ArrayList<String>(16);
+		List<String> tiltPatternList = new ArrayList<String>();
 		for(int i = 1; i <= 16; i++) {
 			tiltPatternList.add(new Integer(i).toString());
 		}
 		signatureAttributeList.add(new Attribute(TILT_PATTERN, tiltPatternList));
-		signatureAttributeList.add(new Attribute(EDGE_POINTS));
+		signatureAttributeList.add(new Attribute(SIGNATURE_OWNER));
 		return signatureAttributeList;
 	}
 	
