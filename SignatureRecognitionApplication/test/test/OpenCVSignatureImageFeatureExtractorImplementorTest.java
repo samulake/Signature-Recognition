@@ -40,9 +40,9 @@ public class OpenCVSignatureImageFeatureExtractorImplementorTest {
 		Mat img;
 		
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);		
-		img = Imgcodecs.imread("./testData/sign2.jpg");
+		img = Imgcodecs.imread("./testData/testpng4.png");
 		   		
-		float expected = (float) 104 / (float) 195;
+		float expected = (float) 42 / (float) 70;
 		float actual = o.getHeightWidthRatio(img);
 		
 		assertEquals(String.valueOf(expected), String.valueOf(actual));
