@@ -28,7 +28,7 @@ public class SignatureImageFeatureExtractor implements FeatureExtractor {
 		double [] attributesValueVector = new double [signatureAttributeList.size()];
 		attributesValueVector[0] = SignatureImageUtils.getHorizontalCenter(signatureImage);
 		attributesValueVector[1] = SignatureImageUtils.getVerticalCenter(signatureImage);
-		attributesValueVector[2] = dataRaw.attribute(2).addStringValue("?");
+		attributesValueVector[2] = SignatureImageUtils.getHeightWidthRatio(signatureImage);
 		attributesValueVector[3] = SignatureImageUtils.countBlackPixels(signatureImage);
 		attributesValueVector[4] = dataRaw.attribute(4).addStringValue("?");
 		attributesValueVector[5] = SignatureImageUtils.getHighestBlackPixel(signatureImage).x;
