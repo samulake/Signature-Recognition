@@ -21,6 +21,13 @@ public class SignatureAttributes {
 	public static final String RELATION_NAME = "signature features";
 	
 	public static List<Attribute> attributes() {
+		List<String> signatureOwnerList = new ArrayList<String>();
+			signatureOwnerList.add("Eryk Samulak nieczytelny");
+			signatureOwnerList.add("Eryk Samulak czytelny");
+			signatureOwnerList.add("Konrad Sza³ankiewicz");
+			signatureOwnerList.add("Marcin Lipiñski");
+
+				
 		List<Attribute> signatureAttributeList = new ArrayList<>();
 		signatureAttributeList.add(new Attribute(HORIZONTAL_CENTER));
 		signatureAttributeList.add(new Attribute(VERTICAL_CENTER));
@@ -30,16 +37,20 @@ public class SignatureAttributes {
 		signatureAttributeList.add(new Attribute(HIGHEST_PIXEL_X));
 		signatureAttributeList.add(new Attribute(LOWEST_PIXEL_X));
 		
-		List<String> tiltPatternList = new ArrayList<String>();
+		List<String> tiltPatternList = new ArrayList<String>(16);
 		for(int i = 1; i <= 16; i++) {
-			tiltPatternList.add(new Integer(i).toString());
+			String patternID = "" + i;
+			tiltPatternList.add(patternID);
 		}
+
 		signatureAttributeList.add(new Attribute(TILT_PATTERN, tiltPatternList));
-		signatureAttributeList.add(new Attribute(SIGNATURE_OWNER));
+		signatureAttributeList.add(new Attribute(SIGNATURE_OWNER, signatureOwnerList));
 		return signatureAttributeList;
 	}
 	
 	public static Instances instancesFeatures() {
-		return new Instances(RELATION_NAME,(ArrayList<Attribute>) attributes(),attributes().size());
+		Instances instances = new Instances(RELATION_NAME,(ArrayList<Attribute>) attributes(),0);
+		instances.setClassIndex(attributes().size()-1);
+		return instances;
 	}
 }
