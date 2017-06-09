@@ -3,13 +3,21 @@ package application;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
+
 import java.awt.Color;
+
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.JTextField;
 import javax.swing.JRadioButton;
+
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.UIManager;
 
 public class MainPanel extends JPanel {
@@ -44,6 +52,12 @@ public class MainPanel extends JPanel {
 		
 		JButton button_1 = new JButton("Browse");
 		button_1.setBounds(354, 27, 104, 25);
+		button_1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				browseForTrainDatabase();
+			}
+		});
 		panel_5.add(button_1);
 		
 		textField_2 = new JTextField();
@@ -131,4 +145,15 @@ public class MainPanel extends JPanel {
 		add(lblSignatureAfterPreprocessing);
 		setVisible(true);
 	}
+
+	private void browseForTrainDatabase() {
+		JFileChooser fileChooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("ARFF (*.arff)", "arff");
+		fileChooser.setFileFilter(filter);
+		int returnVal = fileChooser.showOpenDialog(getParent());
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+			textField_2.setText(fileChooser.getSelectedFile().getAbsolutePath());
+	}
+	
+	
 }
