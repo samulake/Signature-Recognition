@@ -51,11 +51,16 @@ public class BasicClassifierFactoryTest {
 	}
 
 	@Test
-	public void test() {
+	public void test() throws Exception {
 		assertTrue(testedClass.buildDecisionTree(trainData) instanceof J48);
 		assertTrue(testedClass.buildNaiveBayesClassifier(trainData) instanceof NaiveBayes);
 		assertTrue(testedClass.buildNeuralNetwork(trainData) instanceof MultilayerPerceptron);
 		assertEquals(5, ((J48)testedClass.buildDecisionTree(trainData)).getOptions().length);
+		Classifier classifier = testedClass.buildDecisionTree(trainData);
+		for(int i = 0; i < testData.size(); i++) {
+			double predictedClassID = classifier.classifyInstance(testData.instance(i));
+			System.out.println(testData.classAttribute().value((int) predictedClassID));
+		}
 		
 	}
 
