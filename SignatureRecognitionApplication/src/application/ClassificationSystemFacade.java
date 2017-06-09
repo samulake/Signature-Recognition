@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,13 +41,15 @@ public class ClassificationSystemFacade {
 	public String getProcessedImagePath() {
 		return processedImagePath;
 	}
+	
+	public String trainSetInfo() {
+		StringBuilder trainSetInfo = new StringBuilder("<html>Number of attributes: " + trainDataSet.numAttributes() + "<br>");
+		trainSetInfo.append("Number of classes: " + trainDataSet.numClasses() + "<br>");
+		trainSetInfo.append("Number of samples " + trainDataSet.numInstances() + "</html>");
+		return trainSetInfo.toString();
+	}
 
 	public ClassificationSystemFacade() {
-		BasicClassifierFactory classifierFactory = BasicClassifierFactory.getInstance();
-		classifierMap = new HashMap<>();
-		classifierMap.put(ClassifierFactory.DECISION_TREE, classifierFactory.buildDecisionTree(null));
-		classifierMap.put(ClassifierFactory.NEURAL_NETWORK, classifierFactory.buildNeuralNetwork(null));
-		classifierMap.put(ClassifierFactory.NAIVE_BAYES_CLASSIFIER, classifierFactory.buildNaiveBayesClassifier(null));
 		predictedClassID = -1;
 		classificationResult = "";
 	}
@@ -73,6 +76,12 @@ public class ClassificationSystemFacade {
 		int lastAttributeIndex = this.trainDataSet.numAttributes() - 1;
 		fileReader.close();
 		this.trainDataSet.setClassIndex(this.trainDataSet.numAttributes() - 1);
+		
+		BasicClassifierFactory classifierFactory = BasicClassifierFactory.getInstance();
+		classifierMap = new HashMap<>();
+		classifierMap.put(ClassifierFactory.DECISION_TREE, classifierFactory.buildDecisionTree(this.trainDataSet));
+		classifierMap.put(ClassifierFactory.NEURAL_NETWORK, classifierFactory.buildNeuralNetwork(this.trainDataSet));
+		classifierMap.put(ClassifierFactory.NAIVE_BAYES_CLASSIFIER, classifierFactory.buildNaiveBayesClassifier(this.trainDataSet));
 	}
 
 	public void reset() {
