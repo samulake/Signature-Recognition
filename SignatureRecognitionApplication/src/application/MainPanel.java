@@ -94,6 +94,12 @@ public class MainPanel extends JPanel {
 		
 		JButton btnLoadImage = new JButton("Load image");
 		btnLoadImage.setBounds(129, 58, 173, 23);
+		btnLoadImage.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				loadImage();
+			}
+		});
 		loadImagePanel.add(btnLoadImage);
 		
 		JPanel panel_3 = new JPanel();
@@ -155,5 +161,8 @@ public class MainPanel extends JPanel {
 			textField_2.setText(fileChooser.getSelectedFile().getAbsolutePath());
 	}
 	
+	protected void loadImage() {
+		classificationSystemFacade.loadSample(textField.getText());		
+	}
 	
 }
