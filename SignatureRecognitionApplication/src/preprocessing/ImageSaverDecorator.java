@@ -17,9 +17,9 @@ public class ImageSaverDecorator extends SignatureImageProcessorDecorator {
 
 	@Override
 	public void processImage(String sourcePath) {
-		Imgcodecs.imwrite(imagesFolderPath + "testImage.jpg", Imgcodecs.imread(sourcePath));
+		Imgcodecs.imwrite(imagesFolderPath + "testImage.png", Imgcodecs.imread(sourcePath));
 		super.processImage(sourcePath);
-		Imgcodecs.imwrite(imagesFolderPath + "processedImage.jpg", (Mat)super.getImage());
+		Imgcodecs.imwrite(imagesFolderPath + "processedImage.png", (Mat)super.getImage());
 	}
 
 	@Override

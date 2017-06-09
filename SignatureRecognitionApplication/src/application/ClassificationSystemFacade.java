@@ -9,8 +9,13 @@ import java.util.Map;
 
 import org.opencv.core.Mat;
 
+import analysis.FeatureExtractor;
+import analysis.SignatureImageFeatureExtractor;
 import classification.BasicClassifierFactory;
 import classification.ClassifierFactory;
+import preprocessing.ImageSaverDecorator;
+import preprocessing.OpenCVSignatureImageProcessor;
+import preprocessing.SignatureImageProcessor;
 import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -23,7 +28,19 @@ public class ClassificationSystemFacade {
 	private String classificationResult;
 	private Instance classifiedSample;
 	private double predictedClassID;
+	private SignatureImageProcessor imageProcessor = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
+	private FeatureExtractor imageFeatureExtractor = new SignatureImageFeatureExtractor();
+	public final String imagePath = "./data/testImage.png";
+	public final String processedImagePath = "./data/processedImage.png";
 	
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public String getProcessedImagePath() {
+		return processedImagePath;
+	}
+
 	public ClassificationSystemFacade() {
 		BasicClassifierFactory classifierFactory = BasicClassifierFactory.getInstance();
 		classifierMap = new HashMap<>();
@@ -64,6 +81,11 @@ public class ClassificationSystemFacade {
 		classifiedSample = null;
 		predictedClassID = -1;
 		classificationResult = "";
+	}
+	
+	public void loadSample(String filePath) {
+		imageProcessor.processImage(filePath);
+		classifiedSample = imageFeatureExtractor.extractFeatures(processedImagePath);
 	}
 
 }
