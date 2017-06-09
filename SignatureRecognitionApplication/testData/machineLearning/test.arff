@@ -1,23 +1,22 @@
-@relation weather
+@relation 'signature features'
 
-@attribute outlook {sunny, overcast, rainy}
-@attribute temperature numeric
-@attribute humidity numeric
-@attribute windy {TRUE, FALSE}
-@attribute play {yes, no, yesno, noyes}
+@attribute 'horizontal center' numeric
+@attribute 'vertical center' numeric
+@attribute 'height to width ratio' numeric
+@attribute 'signature area' numeric
+@attribute 'horizontal local maxima' numeric
+@attribute 'the highest pixel x coordinate' numeric
+@attribute 'the lowest pixel x coordinate' numeric
+@attribute tiltPattern {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
+@attribute 'signature owner' {'Eryk Samulak nieczytelny','Eryk Samulak czytelny','Konrad Sza³ankiewicz','Marcin Lipiñski'}
 
 @data
-sunny,35,100,FALSE,?
-sunny,80,40,TRUE,?
-overcast,78,93,FALSE,?
-rainy,70,96,FALSE,?
-rainy,68,80,FALSE,?
-rainy,65,70,TRUE,?
-overcast,64,65,TRUE,?
-sunny,72,95,FALSE,?
-sunny,69,70,FALSE,?
-rainy,75,80,FALSE,?
-sunny,75,70,TRUE,?
-overcast,72,90,TRUE,?
-overcast,81,75,FALSE,?
-rainy,71,91,TRUE,?
+69,46,0.411458,721,0,46,4,16,?
+81,41,0.386243,758,0,56,4,3,?
+72,53,0.421875,789,0,56,4,16,?
+78,25,0.208333,500,0,10,26,9,?
+82,22,0.204188,500,0,42,28,4,?
+82,24,0.234375,519,0,41,28,9,?
+87,19,0.140625,473,0,108,196,1,?
+81,23,0.151042,200,0,110,4,2,?
+83,19,0.119792,464,0,106,4,1,?
