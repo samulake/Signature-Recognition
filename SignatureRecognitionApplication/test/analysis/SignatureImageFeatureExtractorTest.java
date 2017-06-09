@@ -2,6 +2,8 @@ package analysis;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -16,7 +18,10 @@ import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 
 import weka.core.Attribute;
+import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
+import weka.core.converters.ArffSaver;
 
 public class SignatureImageFeatureExtractorTest {
 	private SignatureImageFeatureExtractor testedClass;
@@ -40,14 +45,20 @@ public class SignatureImageFeatureExtractorTest {
 	}
 	
 	@Test
-	public void extractFeaturesTest() {
+	public void extractFeaturesTest() throws IOException {
 		String inputDataPathPrefix = "./testData/processImage/testImage";
-		Instances instances = new Instances(SignatureAttributes.RELATION_NAME,(ArrayList<Attribute>) SignatureAttributes.attributes(), 0);
+		Instances instances = SignatureAttributes.instancesFeatures();
+
 		testedClass = new SignatureImageFeatureExtractor();
 		for (int testID = 0; testID < 10; testID++) {
-			instances.add(testedClass.extractFeatures(inputDataPathPrefix + testID + "Result" + testID + ".png"));
+			Instance testSample = testedClass.extractFeatures(inputDataPathPrefix + testID + "Result" + testID + ".png");
+			instances.add(testSample);
 		}
-		
 		System.out.println(instances);
+
+		ArffSaver saver = new ArffSaver();
+		saver.setInstances(instances);
+		saver.setFile(new File("./testData/machineLearning/test.arff"));
+		saver.writeBatch();
 	}
 }
