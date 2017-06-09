@@ -1,5 +1,6 @@
 package application;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
@@ -13,9 +14,12 @@ import javax.swing.JTextField;
 import javax.swing.JRadioButton;
 
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 
 import javax.swing.border.TitledBorder;
@@ -27,6 +31,8 @@ public class MainPanel extends JPanel {
 	private JTextField textField;
 	private ClassificationSystemFacade classificationSystemFacade;
 	private JTextField textField_2;
+	private JPanel panel_1;
+	private JPanel panel_2;
 
 	public MainPanel() {
 		setLayout(null);
@@ -115,6 +121,11 @@ public class MainPanel extends JPanel {
 
 		JButton btnLoadImage = new JButton("Load image");
 		btnLoadImage.setBounds(129, 58, 173, 23);
+		btnLoadImage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				loadImage();
+			}
+		});
 		loadImagePanel.add(btnLoadImage);
 
 		JPanel panel_3 = new JPanel();
@@ -140,7 +151,7 @@ public class MainPanel extends JPanel {
 		btnRecognize.setBounds(140, 259, 187, 42);
 		testPanel.add(btnRecognize);
 
-		JPanel panel_2 = new JPanel();
+		panel_2 = new JPanel();
 		panel_2.setBounds(10, 45, 200, 92);
 		panel_2.setBackground(Color.WHITE);
 		add(panel_2);
@@ -157,7 +168,7 @@ public class MainPanel extends JPanel {
 		textPane.setBounds(10, 317, 200, 34);
 		add(textPane);
 
-		JPanel panel_1 = new JPanel();
+		panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
 		panel_1.setBounds(10, 162, 200, 92);
 		add(panel_1);
@@ -177,4 +188,20 @@ public class MainPanel extends JPanel {
 			textField_2.setText(fileChooser.getSelectedFile().getAbsolutePath());
 	}
 
+	protected void loadImage() {
+		classificationSystemFacade.loadSample(textField.getText());		
+		try {
+			Image image = ImageIO.read(new File(classificationSystemFacade.getImagePath()));
+			Graphics2D g = (Graphics2D) panel_2.getGraphics();
+			float y = (float) image.getHeight(panel_2) / image.getWidth(panel_2) * 200;
+			g.drawImage(image, 0, 0, 200, (int) y, this);
+			
+			Image pimage = ImageIO.read(new File(classificationSystemFacade.getProcessedImagePath()));
+			g = (Graphics2D) panel_1.getGraphics();
+			g.drawImage(pimage, 0, 0, this);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
