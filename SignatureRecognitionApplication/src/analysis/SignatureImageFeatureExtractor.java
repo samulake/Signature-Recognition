@@ -22,20 +22,20 @@ public class SignatureImageFeatureExtractor implements FeatureExtractor {
 
 	public Instance extractFeatures(String imageFilePath) {
 		Mat signatureImage = Imgcodecs.imread(imageFilePath);
-		Instance testSample = new DenseInstance(signatureAttributeList.size());
-		Instances dataRaw = new Instances(SignatureAttributes.RELATION_NAME,(ArrayList<Attribute>) SignatureAttributes.attributes(),0);
+		Instances dataRaw = SignatureAttributes.instancesFeatures();
 		
 		double [] attributesValueVector = new double [signatureAttributeList.size()];
 		attributesValueVector[0] = SignatureImageUtils.getHorizontalCenter(signatureImage);
 		attributesValueVector[1] = SignatureImageUtils.getVerticalCenter(signatureImage);
 		attributesValueVector[2] = SignatureImageUtils.getHeightWidthRatio(signatureImage);
 		attributesValueVector[3] = SignatureImageUtils.countBlackPixels(signatureImage);
-		attributesValueVector[4] = dataRaw.attribute(4).addStringValue("?");
+		//attributesValueVector[4] = dataRaw.attribute(4).addStringValue("?");
 		attributesValueVector[5] = SignatureImageUtils.getHighestBlackPixel(signatureImage).x;
 		attributesValueVector[6] = SignatureImageUtils.getLowestBlackPixel(signatureImage).x;
-		attributesValueVector[7] = SignatureImageUtils.getSignatureTilt(signatureImage);
-		attributesValueVector[8] = dataRaw.attribute(8).addStringValue("?");
-		
-		return new DenseInstance(1.0, attributesValueVector);
+		attributesValueVector[7] = SignatureImageUtils.getSignatureTilt(signatureImage)-1;
+		attributesValueVector[8] = 2;
+
+		Instance sample = new DenseInstance(1,attributesValueVector);
+		return sample;
 	}
 }
