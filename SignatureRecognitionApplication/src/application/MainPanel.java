@@ -174,13 +174,26 @@ public class MainPanel extends JPanel {
 		setVisible(true);
 	}
 
-	private void browseForFile(JTextField textField, String extsDesc, String exts ) {
+	private void browseForTrainDatabase() {
+		JFileChooser fileChooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("ARFF (*.arff)", "arff");
+		fileChooser.setFileFilter(filter);
+		int returnVal = fileChooser.showOpenDialog(getParent());
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+			textField_2.setText(fileChooser.getSelectedFile().getAbsolutePath());
+	}
+
+	private void browseForFile(JTextField textField, String extsDesc, String exts) {
 		JFileChooser fileChooser = new JFileChooser();
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(extsDesc, exts);
 		fileChooser.setFileFilter(filter);
 		int returnVal = fileChooser.showOpenDialog(getParent());
 		if (returnVal == JFileChooser.APPROVE_OPTION)
 			textField.setText(fileChooser.getSelectedFile().getAbsolutePath());
+	}
+
+	protected void loadImage() {
+		classificationSystemFacade.loadSample(textField.getText());
 	}
 
 }
