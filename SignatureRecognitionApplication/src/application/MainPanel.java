@@ -56,7 +56,7 @@ public class MainPanel extends JPanel {
 		button_1.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				browseForTrainDatabase();
+				browseForFile(textField_2, "ARFF (*.arff)", "arff");
 			}
 		});
 		panel_5.add(button_1);
@@ -106,6 +106,12 @@ public class MainPanel extends JPanel {
 
 		JButton btnBrowse = new JButton("Browse");
 		btnBrowse.setBounds(371, 21, 87, 25);
+		btnBrowse.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				browseForFile(textField, "PNG (*.png)", "png");
+			}
+		});
 		loadImagePanel.add(btnBrowse);
 
 		textField = new JTextField();
@@ -168,13 +174,13 @@ public class MainPanel extends JPanel {
 		setVisible(true);
 	}
 
-	private void browseForTrainDatabase() {
+	private void browseForFile(JTextField textField, String extsDesc, String exts ) {
 		JFileChooser fileChooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("ARFF (*.arff)", "arff");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(extsDesc, exts);
 		fileChooser.setFileFilter(filter);
 		int returnVal = fileChooser.showOpenDialog(getParent());
 		if (returnVal == JFileChooser.APPROVE_OPTION)
-			textField_2.setText(fileChooser.getSelectedFile().getAbsolutePath());
+			textField.setText(fileChooser.getSelectedFile().getAbsolutePath());
 	}
 
 }
