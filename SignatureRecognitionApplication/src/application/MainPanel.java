@@ -242,11 +242,14 @@ public class MainPanel extends JPanel {
 			Image image = ImageIO.read(new File(classificationSystemFacade.getImagePath()));
 			Graphics2D g = (Graphics2D) panel_2.getGraphics();
 			float y = (float) image.getHeight(panel_2) / image.getWidth(panel_2) * 200;
+			y = y > 92 ? 92 : y;
 			g.drawImage(image, 0, 0, 200, (int) y, this);
 			
 			Image pimage = ImageIO.read(new File(classificationSystemFacade.getProcessedImagePath()));
 			g = (Graphics2D) panel_1.getGraphics();
-			g.drawImage(pimage, 0, 0, this);
+			y = pimage.getHeight(panel_1);
+			y = y > 92 ? 92 : y;
+			g.drawImage(pimage, 0, 0, 200, (int) y, this);
 		} catch (IOException e) {
 			
 		}
