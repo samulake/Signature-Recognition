@@ -33,9 +33,10 @@ public class SignatureImageFeatureExtractor implements FeatureExtractor {
 		attributesValueVector[5] = SignatureImageUtils.getHighestBlackPixel(signatureImage).x;
 		attributesValueVector[6] = SignatureImageUtils.getLowestBlackPixel(signatureImage).x;
 		attributesValueVector[7] = SignatureImageUtils.getSignatureTilt(signatureImage)-1;
-		attributesValueVector[8] = 2;
+		
 
 		Instance sample = new DenseInstance(1,attributesValueVector);
+		System.out.println(sample);
 		return sample;
 	}
 }
