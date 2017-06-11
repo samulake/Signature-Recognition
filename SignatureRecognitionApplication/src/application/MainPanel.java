@@ -20,12 +20,20 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Scanner;
 
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import classification.ClassifierNames;
+
 import javax.swing.UIManager;
 import javax.swing.SwingConstants;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 
 public class MainPanel extends JPanel {
 	private JTextField textField;
@@ -33,6 +41,7 @@ public class MainPanel extends JPanel {
 	private JTextField textField_2;
 	private JPanel panel_1;
 	private JPanel panel_2;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
 
 	public MainPanel() {
 		setLayout(null);
@@ -66,6 +75,10 @@ public class MainPanel extends JPanel {
 			}
 		});
 		panel_5.add(button_1);
+		
+		JTextPane textPane = new JTextPane();
+		textPane.setBounds(10, 317, 200, 34);
+		add(textPane);
 
 		textField_2 = new JTextField();
 		textField_2.setBounds(67, 26, 264, 25);
@@ -141,19 +154,37 @@ public class MainPanel extends JPanel {
 		testPanel.add(panel_3);
 		panel_3.setLayout(null);
 
-		JRadioButton radioButton = new JRadioButton("Artificial Neural Network");
+		JRadioButton radioButton = new JRadioButton(ClassifierNames.NEURAL_NETWORK);
+		buttonGroup.add(radioButton);
 		radioButton.setBounds(6, 104, 240, 23);
 		panel_3.add(radioButton);
+		radioButton.setSelected(true);
 
-		JRadioButton rdbtnNaiveBayesClassifier = new JRadioButton("Naive Bayes classifier");
+		JRadioButton rdbtnNaiveBayesClassifier = new JRadioButton(ClassifierNames.NAIVE_BAYES_CLASSIFIER);
+		buttonGroup.add(rdbtnNaiveBayesClassifier);
 		rdbtnNaiveBayesClassifier.setBounds(6, 65, 240, 23);
 		panel_3.add(rdbtnNaiveBayesClassifier);
 
-		JRadioButton radioButton_3 = new JRadioButton("Decision Tree");
+		JRadioButton radioButton_3 = new JRadioButton(ClassifierNames.DECISION_TREE);
+		buttonGroup.add(radioButton_3);
 		radioButton_3.setBounds(6, 27, 240, 23);
 		panel_3.add(radioButton_3);
 
 		JButton btnRecognize = new JButton("Recognize");
+		btnRecognize.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String selectedClassifier = getSelectedClassifierName();
+				try {
+					classificationSystemFacade.classify(selectedClassifier);
+					textPane.setText(classificationSystemFacade.getClassificationResult());
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		});
 		btnRecognize.setBounds(140, 259, 187, 42);
 		testPanel.add(btnRecognize);
 
@@ -169,10 +200,6 @@ public class MainPanel extends JPanel {
 		JLabel lblNewLabel = new JLabel("Prediction result:");
 		lblNewLabel.setBounds(10, 299, 200, 14);
 		add(lblNewLabel);
-
-		JTextPane textPane = new JTextPane();
-		textPane.setBounds(10, 317, 200, 34);
-		add(textPane);
 
 		panel_1 = new JPanel();
 		panel_1.setBackground(Color.WHITE);
@@ -204,6 +231,12 @@ public class MainPanel extends JPanel {
 	}
 
 	protected void loadImage() {
+		try {
+			Scanner scanner = new Scanner(new File(textField.getText()));
+		} catch (FileNotFoundException e1) {
+			textField.setText("Load image in png format!");
+			return;
+		}
 		classificationSystemFacade.loadSample(textField.getText());		
 		try {
 			Image image = ImageIO.read(new File(classificationSystemFacade.getImagePath()));
@@ -215,9 +248,18 @@ public class MainPanel extends JPanel {
 			g = (Graphics2D) panel_1.getGraphics();
 			g.drawImage(pimage, 0, 0, this);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
 		}
+	}
+	
+	private String getSelectedClassifierName() {
+		for (Enumeration<AbstractButton> buttons = buttonGroup.getElements(); buttons.hasMoreElements();) {
+            AbstractButton button = buttons.nextElement();
+            if (button.isSelected()) {
+                return button.getText();
+            }
+        }
+		return "";
 	}
 
 }

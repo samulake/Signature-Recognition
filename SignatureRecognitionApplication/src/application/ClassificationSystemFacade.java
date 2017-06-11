@@ -14,6 +14,7 @@ import analysis.FeatureExtractor;
 import analysis.SignatureImageFeatureExtractor;
 import classification.BasicClassifierFactory;
 import classification.ClassifierFactory;
+import classification.ClassifierNames;
 import preprocessing.ImageSaverDecorator;
 import preprocessing.OpenCVSignatureImageProcessor;
 import preprocessing.SignatureImageProcessor;
@@ -33,7 +34,7 @@ public class ClassificationSystemFacade {
 	private FeatureExtractor imageFeatureExtractor = new SignatureImageFeatureExtractor();
 	public final String imagePath = "./data/testImage.png";
 	public final String processedImagePath = "./data/processedImage.png";
-	
+
 	public String getImagePath() {
 		return imagePath;
 	}
@@ -41,9 +42,10 @@ public class ClassificationSystemFacade {
 	public String getProcessedImagePath() {
 		return processedImagePath;
 	}
-	
+
 	public String trainSetInfo() {
-		StringBuilder trainSetInfo = new StringBuilder("<html>Number of attributes: " + trainDataSet.numAttributes() + "<br>");
+		StringBuilder trainSetInfo = new StringBuilder(
+				"<html>Number of attributes: " + trainDataSet.numAttributes() + "<br>");
 		trainSetInfo.append("Number of classes: " + trainDataSet.numClasses() + "<br>");
 		trainSetInfo.append("Number of samples " + trainDataSet.numInstances() + "</html>");
 		return trainSetInfo.toString();
@@ -54,15 +56,20 @@ public class ClassificationSystemFacade {
 		classificationResult = "";
 	}
 
-	public void classify(String dataFilePath, String classifierName) throws Exception {
-		if(trainDataSet == null) {
+	public void classify(String classifierName) throws Exception {
+		if (trainDataSet == null) {
 			return;
 		}
+		if (classifiedSample == null) {
+			return;
+		}
+		classifiedSample.setDataset(trainDataSet);
 		Classifier classifier = classifierMap.get(classifierName);
 		classifier.buildClassifier(trainDataSet);
 		this.predictedClassID = classifier.classifyInstance(classifiedSample);
-		double [] predictionProbabilites = classifier.distributionForInstance(classifiedSample);
-		classificationResult = classifiedSample.classAttribute().value((int)predictedClassID) + "\n" + predictionProbabilites[(int)predictedClassID] ;
+		double[] predictionProbabilites = classifier.distributionForInstance(classifiedSample);
+		classificationResult = classifiedSample.classAttribute().value((int) predictedClassID) + "\n"
+				+ predictionProbabilites[(int) predictedClassID];
 	}
 
 	public String getClassificationResult() {
@@ -76,12 +83,13 @@ public class ClassificationSystemFacade {
 		int lastAttributeIndex = this.trainDataSet.numAttributes() - 1;
 		fileReader.close();
 		this.trainDataSet.setClassIndex(this.trainDataSet.numAttributes() - 1);
-		
+
 		BasicClassifierFactory classifierFactory = BasicClassifierFactory.getInstance();
 		classifierMap = new HashMap<>();
-		classifierMap.put(ClassifierFactory.DECISION_TREE, classifierFactory.buildDecisionTree(this.trainDataSet));
-		classifierMap.put(ClassifierFactory.NEURAL_NETWORK, classifierFactory.buildNeuralNetwork(this.trainDataSet));
-		classifierMap.put(ClassifierFactory.NAIVE_BAYES_CLASSIFIER, classifierFactory.buildNaiveBayesClassifier(this.trainDataSet));
+		classifierMap.put(ClassifierNames.DECISION_TREE, classifierFactory.buildDecisionTree(this.trainDataSet));
+		classifierMap.put(ClassifierNames.NEURAL_NETWORK, classifierFactory.buildNeuralNetwork(this.trainDataSet));
+		classifierMap.put(ClassifierNames.NAIVE_BAYES_CLASSIFIER,
+				classifierFactory.buildNaiveBayesClassifier(this.trainDataSet));
 	}
 
 	public void reset() {
@@ -91,7 +99,7 @@ public class ClassificationSystemFacade {
 		predictedClassID = -1;
 		classificationResult = "";
 	}
-	
+
 	public void loadSample(String filePath) {
 		imageProcessor.processImage(filePath);
 		classifiedSample = imageFeatureExtractor.extractFeatures(processedImagePath);
