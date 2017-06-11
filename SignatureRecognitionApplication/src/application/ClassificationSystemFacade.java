@@ -90,6 +90,7 @@ public class ClassificationSystemFacade {
 		classifierMap.put(ClassifierNames.NEURAL_NETWORK, classifierFactory.buildNeuralNetwork(this.trainDataSet));
 		classifierMap.put(ClassifierNames.NAIVE_BAYES_CLASSIFIER,
 				classifierFactory.buildNaiveBayesClassifier(this.trainDataSet));
+<<<<<<< HEAD
 		trainDataSet.instance(0).setWeight(3);
 		trainDataSet.instance(1).setWeight(3);
 		trainDataSet.instance(2).setWeight(3);
@@ -97,6 +98,15 @@ public class ClassificationSystemFacade {
 		trainDataSet.instance(4).setWeight(0);
 		trainDataSet.instance(5).setWeight(6);
 		trainDataSet.instance(6).setWeight(6);
+=======
+		trainDataSet.instance(0).setWeight(4);
+		trainDataSet.instance(1).setWeight(4);
+		trainDataSet.instance(2).setWeight(7);
+		trainDataSet.instance(3).setWeight(10);
+		trainDataSet.instance(4).setWeight(0);
+		trainDataSet.instance(5).setWeight(10);
+		trainDataSet.instance(6).setWeight(10);
+>>>>>>> refs/remotes/origin/73_recognize_button
 		trainDataSet.instance(7).setWeight(10);
 		trainDataSet.instance(8).setWeight(0);
 	}
