@@ -29,13 +29,28 @@ public class SignatureAttributes {
 
 				
 		List<Attribute> signatureAttributeList = new ArrayList<>();
-		signatureAttributeList.add(new Attribute(HORIZONTAL_CENTER));
-		signatureAttributeList.add(new Attribute(VERTICAL_CENTER));
-		signatureAttributeList.add(new Attribute(HEIGHT_TO_WIDTH_RATIO));
-		signatureAttributeList.add(new Attribute(SIGNATURE_AREA));
-		signatureAttributeList.add(new Attribute(HORIZONTAL_LOCAL_MAXIMA));
-		signatureAttributeList.add(new Attribute(HIGHEST_PIXEL_X));
-		signatureAttributeList.add(new Attribute(LOWEST_PIXEL_X));
+		Attribute horizontalCenter = new Attribute(HORIZONTAL_CENTER);
+		horizontalCenter.setWeight(10);
+		Attribute verticalCenter = new Attribute(VERTICAL_CENTER);
+		verticalCenter.setWeight(10);
+		Attribute heightToWidthRatio = new Attribute(HEIGHT_TO_WIDTH_RATIO);
+		heightToWidthRatio.setWeight(0.5);
+		Attribute signatureArea = new Attribute(SIGNATURE_AREA);
+		signatureArea.setWeight(0.4);
+		Attribute horizontalLocalMaxima= new Attribute(HORIZONTAL_LOCAL_MAXIMA);
+		horizontalLocalMaxima.setWeight(0);
+		Attribute highestPixelX = new Attribute(HIGHEST_PIXEL_X);
+		highestPixelX.setWeight(0.6);
+		Attribute lowestPixelX = new Attribute(LOWEST_PIXEL_X);
+		lowestPixelX.setWeight(0.6);
+
+		signatureAttributeList.add(horizontalCenter);
+		signatureAttributeList.add(verticalCenter);
+		signatureAttributeList.add(heightToWidthRatio);
+		signatureAttributeList.add(signatureArea);
+		signatureAttributeList.add(horizontalLocalMaxima);
+		signatureAttributeList.add(highestPixelX);
+		signatureAttributeList.add(lowestPixelX);
 		
 		List<String> tiltPatternList = new ArrayList<String>(16);
 		for(int i = 1; i <= 16; i++) {
@@ -43,8 +58,11 @@ public class SignatureAttributes {
 			tiltPatternList.add(patternID);
 		}
 
-		signatureAttributeList.add(new Attribute(TILT_PATTERN, tiltPatternList));
+		Attribute tiltPattern = new Attribute(TILT_PATTERN, tiltPatternList);
+		tiltPattern.setWeight(1);
+		signatureAttributeList.add(tiltPattern);
 		signatureAttributeList.add(new Attribute(SIGNATURE_OWNER, signatureOwnerList));
+
 		return signatureAttributeList;
 	}
 	

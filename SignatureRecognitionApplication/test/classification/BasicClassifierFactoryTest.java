@@ -59,8 +59,9 @@ public class BasicClassifierFactoryTest {
 		Classifier classifier = testedClass.buildDecisionTree(trainData);
 		for(int i = 0; i < testData.size(); i++) {
 			double predictedClassID = classifier.classifyInstance(testData.instance(i));
-			System.out.println(testData.classAttribute().value((int) predictedClassID));
 		}
+		
+		System.out.println(classifier);
 		
 	}
 
