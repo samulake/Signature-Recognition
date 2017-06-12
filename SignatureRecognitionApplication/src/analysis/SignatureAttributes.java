@@ -16,6 +16,8 @@ public class SignatureAttributes {
 	public static final String LOWEST_PIXEL_X = "the lowest pixel x coordinate";
 	public static final String TILT_PATTERN = "tiltPattern";
 	public static final String EDGE_POINTS = "edge points";
+	public static final String VERTICAL_HISTOGRAM_MAX_VALUE = "vertical histogram max value";
+	public static final String HORIZONTAL_HISTOGRAM_MAX_VALUE = "horizontal histogram max value";
 	public static final String SIGNATURE_OWNER = "signature owner";
 	
 	public static final String RELATION_NAME = "signature features";
@@ -24,25 +26,29 @@ public class SignatureAttributes {
 		List<String> signatureOwnerList = new ArrayList<String>();
 			signatureOwnerList.add("Eryk Samulak nieczytelny");
 			signatureOwnerList.add("Eryk Samulak czytelny");
-			signatureOwnerList.add("Konrad Sza³ankiewicz");
+			signatureOwnerList.add("Konrad Sza³ankiewicz czytelny");
+			signatureOwnerList.add("Konrad Sza³ankiewicz nieczytelny");
 			signatureOwnerList.add("Marcin Lipiñski");
+			signatureOwnerList.add("Jakub Wawrzyniak");
+			signatureOwnerList.add("Jan Kowalski czytelny");
+			signatureOwnerList.add("Jan Kowalski nieczytelny");
 
 				
 		List<Attribute> signatureAttributeList = new ArrayList<>();
 		Attribute horizontalCenter = new Attribute(HORIZONTAL_CENTER);
-		horizontalCenter.setWeight(10);
+		horizontalCenter.setWeight(3);
 		Attribute verticalCenter = new Attribute(VERTICAL_CENTER);
-		verticalCenter.setWeight(10);
+		verticalCenter.setWeight(3);
 		Attribute heightToWidthRatio = new Attribute(HEIGHT_TO_WIDTH_RATIO);
-		heightToWidthRatio.setWeight(0.5);
+		heightToWidthRatio.setWeight(10);
 		Attribute signatureArea = new Attribute(SIGNATURE_AREA);
-		signatureArea.setWeight(0.4);
+		signatureArea.setWeight(6);
 		Attribute horizontalLocalMaxima= new Attribute(HORIZONTAL_LOCAL_MAXIMA);
 		horizontalLocalMaxima.setWeight(0);
 		Attribute highestPixelX = new Attribute(HIGHEST_PIXEL_X);
-		highestPixelX.setWeight(0.6);
+		highestPixelX.setWeight(5);
 		Attribute lowestPixelX = new Attribute(LOWEST_PIXEL_X);
-		lowestPixelX.setWeight(0.6);
+		lowestPixelX.setWeight(5);
 
 		signatureAttributeList.add(horizontalCenter);
 		signatureAttributeList.add(verticalCenter);
@@ -61,6 +67,10 @@ public class SignatureAttributes {
 		Attribute tiltPattern = new Attribute(TILT_PATTERN, tiltPatternList);
 		tiltPattern.setWeight(1);
 		signatureAttributeList.add(tiltPattern);
+		Attribute verticalHistogramMaxValue = new Attribute(VERTICAL_HISTOGRAM_MAX_VALUE);
+		signatureAttributeList.add(verticalHistogramMaxValue);
+		Attribute horizontalHistogramMaxValue = new Attribute(HORIZONTAL_HISTOGRAM_MAX_VALUE);
+		signatureAttributeList.add(horizontalHistogramMaxValue);
 		signatureAttributeList.add(new Attribute(SIGNATURE_OWNER, signatureOwnerList));
 
 		return signatureAttributeList;
