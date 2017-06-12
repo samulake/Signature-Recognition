@@ -10,5 +10,4 @@ public class Main {
 		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 		new SignatureRecognitionFrame().main(args);
 	}
-	
 }
