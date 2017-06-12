@@ -38,6 +38,10 @@ public class ClassificationSystemFacade {
 	public String getImagePath() {
 		return imagePath;
 	}
+	
+	public Instance getClassifiedSample() {
+		return this.classifiedSample;
+	}
 
 	public String getProcessedImagePath() {
 		return processedImagePath;
