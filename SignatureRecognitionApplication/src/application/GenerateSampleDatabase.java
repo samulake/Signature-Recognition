@@ -1,15 +1,27 @@
 package application;
 
+import java.io.IOException;
+
+import org.opencv.core.Core;
+
+import classification.ClassifierNames;
 import preprocessing.OpenCVSignatureImageProcessor;
 import preprocessing.SignatureImageProcessor;
 
 public class GenerateSampleDatabase {
 
-	public static void main(String[] args) {
-		SignatureImageProcessor imageProcessor = new OpenCVSignatureImageProcessor();
+	public static void main(String[] args) throws Exception {
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		ClassificationSystemFacade facade = new ClassificationSystemFacade();
+		facade.loadExistingTrainDataSet("C:/Users/Eryk/Desktop/test.arff");
 		
-		//for(int i = 0; i )
-
+		for(int i = 10; i <= 19; i++) {
+			String path = "C:/Users/Eryk/Desktop/proj3/proj3/testImage" + i + ".png";
+			
+			facade.loadSample(path);
+			facade.classify(ClassifierNames.DECISION_TREE);
+			System.out.println(facade.getClassifiedSample());
+		}
 	}
 
 }

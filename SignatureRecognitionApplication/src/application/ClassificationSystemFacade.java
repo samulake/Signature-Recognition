@@ -38,6 +38,10 @@ public class ClassificationSystemFacade {
 	public String getImagePath() {
 		return imagePath;
 	}
+	
+	public Instance getClassifiedSample() {
+		return this.classifiedSample;
+	}
 
 	public String getProcessedImagePath() {
 		return processedImagePath;
@@ -91,13 +95,16 @@ public class ClassificationSystemFacade {
 		classifierMap.put(ClassifierNames.NAIVE_BAYES_CLASSIFIER,
 				classifierFactory.buildNaiveBayesClassifier(this.trainDataSet));
 
-		trainDataSet.instance(0).setWeight(6);
+		trainDataSet.instance(0).setWeight(3);
 		trainDataSet.instance(1).setWeight(3);
 		trainDataSet.instance(2).setWeight(3);
 		trainDataSet.instance(3).setWeight(6);
 		trainDataSet.instance(4).setWeight(0);
 		trainDataSet.instance(5).setWeight(6);
 		trainDataSet.instance(6).setWeight(6);
+		trainDataSet.instance(7).setWeight(10);
+		trainDataSet.instance(8).setWeight(1);
+
 	}
 
 	public void reset() {
