@@ -15,8 +15,8 @@ public class GenerateSampleDatabase {
 		ClassificationSystemFacade facade = new ClassificationSystemFacade();
 		facade.loadExistingTrainDataSet("C:/Users/Eryk/Desktop/test.arff");
 		
-		for(int i = 10; i <= 19; i++) {
-			String path = "C:/Users/Eryk/Desktop/proj3/proj3/testImage" + i + ".png";
+		for(int i = 0; i <= 49; i++) {
+			String path = "C:/Users/Eryk/Desktop/1/train/testImage" + i + ".png";
 			
 			facade.loadSample(path);
 			facade.classify(ClassifierNames.DECISION_TREE);
