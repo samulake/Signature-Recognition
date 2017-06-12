@@ -29,14 +29,16 @@ public class SignatureImageFeatureExtractor implements FeatureExtractor {
 		attributesValueVector[1] = SignatureImageUtils.getVerticalCenter(signatureImage);
 		attributesValueVector[2] = SignatureImageUtils.getHeightWidthRatio(signatureImage);
 		attributesValueVector[3] = SignatureImageUtils.countBlackPixels(signatureImage);
-		//attributesValueVector[4] = dataRaw.attribute(4).addStringValue("?");
+		//attributesValueVector[4] = SignatureImageUtils.getEdgePointNumber(signatureImage);
 		attributesValueVector[5] = SignatureImageUtils.getHighestBlackPixel(signatureImage).x;
 		attributesValueVector[6] = SignatureImageUtils.getLowestBlackPixel(signatureImage).x;
 		attributesValueVector[7] = SignatureImageUtils.getSignatureTilt(signatureImage)-1;
+		attributesValueVector[8] = SignatureImageUtils.getHistogramMaxValue(SignatureImageUtils.getVerticalHistogram(signatureImage));
+		attributesValueVector[9] = SignatureImageUtils.getHistogramMaxValue(SignatureImageUtils.getHorizontalHistogram(signatureImage));
 		
 
 		Instance sample = new DenseInstance(1,attributesValueVector);
-		System.out.println(sample);
+		
 		return sample;
 	}
 }

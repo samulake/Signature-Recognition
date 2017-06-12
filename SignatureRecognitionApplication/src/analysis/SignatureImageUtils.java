@@ -25,6 +25,16 @@ public class SignatureImageUtils {
         }
         return histogram;
     }
+    
+    public static int getHistogramMaxValue(int [] histogram) {
+    	int max = 0;
+    	for(int i = 1; i < histogram.length; i++) {
+    		if(histogram[max] <= histogram[i]) {
+    			max = i;
+    		}
+    	}
+    	return max;
+    }
 
     public static int[] getVerticalHistogram(Mat input) {
         int histogram[] = new int[input.height()];
@@ -38,6 +48,8 @@ public class SignatureImageUtils {
         }
         return histogram;
     }
+    
+    
 
     public static int getHorizontalCenter(Mat input){
 
