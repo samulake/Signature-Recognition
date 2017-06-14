@@ -35,7 +35,7 @@ public class BasicClassifierFactory implements ClassifierFactory {
 
 		multilayerPerceptron.setLearningRate(0.1);
 		multilayerPerceptron.setMomentum(0.2);
-		multilayerPerceptron.setTrainingTime(2000);
+		multilayerPerceptron.setTrainingTime(1500);
 		multilayerPerceptron.setHiddenLayers("3");
 		multilayerPerceptron = (MultilayerPerceptron) tryToBuildClassifier(multilayerPerceptron, trainData);
 		return multilayerPerceptron;
