@@ -1,5 +1,5 @@
 # Signature recognition application
-##Group project, Warsaw University of Technology, 2016/2017
+## Group project, Warsaw University of Technology, 2016/2017
 
 ### Goal:
 Comparing of the results of three classifiers: Decision Trees, Naive Bayes Classifier and Neural Network within recognition of signatures owner.
