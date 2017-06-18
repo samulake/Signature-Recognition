@@ -1,37 +1,15 @@
-# You've added your first Readme file!
-A README.md file is intended to quickly orient readers to what your project can do.  New to Markdown? [Learn more](https://go.microsoft.com/fwlink/p/?LinkId=524306&clcid=0x409)
+# Signature recognition application
 
-## Edit this README and commit your change to a topic branch
-In Git, branches are cheap.  You should use them whenever you're making changes to your repository.  Edit this file by clicking on the edit icon.
+## Group project, Warsaw University of Technology, 2016/2017
 
-Then make some changes to this README file.
+### Goal:
+Comparing of the results of three classifiers: Decision Trees, Naive Bayes Classifier and Neural Network within recognition of signatures owner.
 
-> Make some **edits** to _this_ blockquote
+### Number of team members: 
+4
 
-When you are done, click the dropdown arrow next to the save button - that will allow you to commit your changes to a new branch.
+### My role:
+Project Manager, Programmer.
 
-## Create a pull request to contribute your changes back into master
-Pull requests are the way to move changes from a topic branch back into the master branch.
-
-Click on the **Pull Requests** page in the **CODE** hub, then click "New Pull Request" to create a new pull request from your topic branch to the master branch.
-
-When you are done adding details, click "Create Pull request". Once a pull request is sent, reviewers can see your changes, recommend modifications, or even push follow-up commits.
-
-First time creating a pull request?  [Learn more](https://go.microsoft.com/fwlink/?LinkId=533211&clcid=0x409)
-
-### Congratulations! You've completed the grand tour of the CODE hub!
-
-# Next steps
-
-If you haven't already done so, [install Git](https://git-scm.com/downloads) (as well as [Git Credential Manager](https://java.visualstudio.com/Downloads/gitcredentialmanager/Index) for Linux or Mac OS)
-
-Choose and install one of these supported IDEs:
-* [Visual Studio](https://go.microsoft.com/fwlink/?LinkId=309297&clcid=0x409&slcid=0x409)
-* [Android Studio](https://developer.android.com/studio) (with [Team Services Plugin](https://java.visualstudio.com/Downloads/intellijplugin/Index))
-* [Eclipse](https://www.eclipse.org/downloads) (with [Team Explorer Everywhere](https://java.visualstudio.com/Downloads/eclipseplugin/Index))
-* [IntelliJ IDEA](https://www.jetbrains.com/idea/download) (with [Team Services Plugin](https://java.visualstudio.com/Downloads/intellijplugin/Index))
-* [Visual Studio Code](https://code.visualstudio.com/Download) (with [Team Services Extension](https://java.visualstudio.com/Downloads/visualstudiocode/Index))
-
-Then clone this repo to your local machine to get started with your own project.
-
-Happy coding!
+### Description:
+A Java Swing application used for signature's owner recognition. The usage of the app is simple: firstly, the train data set is loaded. Only .arff format, consistent with Weka API standards, is acceptable. Secondly, an image in .png format with the signature beeing verified is loaded and displayed in GUI, preprocessed image is shown as well. Tested signature can be recognized using one of the tree classifiers: Decision Trees, Naive Bayes classifier and Neural Network. The result comprises of the signature owner ( a class ) and the probability value <0, 1>. The application works very well only for the signatures, whose samples are already in training data set. Otherwise, the chosen classifier recognize the signature's owner, that has the highest probability.
