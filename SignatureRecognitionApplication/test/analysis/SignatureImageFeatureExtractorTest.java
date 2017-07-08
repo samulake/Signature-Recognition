@@ -37,6 +37,7 @@ public class SignatureImageFeatureExtractorTest {
 
 	@Before
 	public void setUp() throws Exception {
+		testedClass = new SignatureImageFeatureExtractor();
 	}
 
 	@After
@@ -45,16 +46,16 @@ public class SignatureImageFeatureExtractorTest {
 	}
 	
 	@Test
-	public void extractFeaturesTest() throws IOException {
+	public void extractFeaturesTest() throws Exception {
 		String inputDataPathPrefix = "./testData/processImage/testImage";
-		Instances instances = SignatureAttributes.instancesFeatures();
+		AttributesDefinition attributeDefinition = new AttributesDefinition();
+		Instances instances = new Instances(SignatureImageFeatureExtractor.RELATION_NAME, new ArrayList<>(attributeDefinition.getAttributeSet()), 0);
 
-		testedClass = new SignatureImageFeatureExtractor();
 		for (int testID = 0; testID < 10; testID++) {
 			Instance testSample = testedClass.extractFeatures(inputDataPathPrefix + testID + "Result" + testID + ".png");
 			instances.add(testSample);
+			System.out.println(testSample);
 		}
-		System.out.println(instances);
 
 		ArffSaver saver = new ArffSaver();
 		saver.setInstances(instances);
