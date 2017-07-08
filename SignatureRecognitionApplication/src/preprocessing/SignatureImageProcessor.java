@@ -1,5 +1,7 @@
 package preprocessing;
 
+import application.GeneralParameters;
+
 public abstract class SignatureImageProcessor implements ImageProcessor {
 	
 	@Override
@@ -7,7 +9,7 @@ public abstract class SignatureImageProcessor implements ImageProcessor {
 		readImage(sourcePath);
 		eliminateBackground();
 		reduceNoise();
-		normalizeWidth(200);
+		normalizeWidth(GeneralParameters.NORMALIZED_WIDTH);
 		thin();
 	}
 

@@ -11,7 +11,6 @@ import java.util.Arrays;
 public class SignatureImageUtils {
 
     private static int blackValue = 0;
-    private static final int NORMALIZED_WIDTH = 200;
 
     public static int[] getHorizontalHistogram(Mat input) {
         int histogram[] = new int[input.width()];
