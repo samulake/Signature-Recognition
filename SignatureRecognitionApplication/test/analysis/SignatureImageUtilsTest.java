@@ -40,7 +40,7 @@ public class SignatureImageUtilsTest {
 		testedClass = new ImageSaverDecorator(new OpenCVSignatureImageProcessor());
 
 		for (int testID = 0; testID < numberOfTests; testID++) {
-			String inputFilePath = "./testData/processImage/histogram_test/testImage" + testID + "Result" + testID
+			String inputFilePath = "./testData/processImage/testImage" + testID + "Result" + testID
 					+ imageExtention;
 			testedClass.processImage(inputFilePath);
 			Mat resultImage = (Mat) testedClass.getImage();
