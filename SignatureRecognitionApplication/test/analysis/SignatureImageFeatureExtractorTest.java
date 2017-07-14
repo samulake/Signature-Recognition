@@ -3,9 +3,14 @@ package analysis;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -24,7 +29,7 @@ import weka.core.Instances;
 import weka.core.converters.ArffSaver;
 
 public class SignatureImageFeatureExtractorTest {
-	private SignatureImageFeatureExtractor testedClass;
+	private FeatureExtractor testedClass;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -47,16 +52,17 @@ public class SignatureImageFeatureExtractorTest {
 	
 	@Test
 	public void extractFeaturesTest() throws Exception {
-		String inputDataPathPrefix = "./testData/processImage/testImage";
-		AttributesDefinition attributeDefinition = new AttributesDefinition();
-		Instances instances = new Instances(SignatureImageFeatureExtractor.RELATION_NAME, new ArrayList<>(attributeDefinition.getAttributeSet()), 0);
+		File folderWithTestData = new File("./testData/extractFeatures");
+		Instances instances = new Instances(AttributesDefinition.RELATION_NAME, new ArrayList<>(AttributesDefinition.attributeMap().keySet()), 0);
+		int expectedNumberOfInstances = 10;
+		File [] imagePNGArray = folderWithTestData.listFiles(file -> file.getName().endsWith(".png"));
 
-		for (int testID = 0; testID < 10; testID++) {
-			Instance testSample = testedClass.extractFeatures(inputDataPathPrefix + testID + "Result" + testID + ".png");
-			instances.add(testSample);
-			System.out.println(testSample);
+		for(File imagePNG: imagePNGArray) {
+			Instance instance = testedClass.extractFeatures(imagePNG.getAbsolutePath());
+			instances.add(instance);
 		}
-
+		
+		assertEquals(expectedNumberOfInstances, instances.numInstances());
 		ArffSaver saver = new ArffSaver();
 		saver.setInstances(instances);
 		saver.setFile(new File("./testData/machineLearning/test.arff"));

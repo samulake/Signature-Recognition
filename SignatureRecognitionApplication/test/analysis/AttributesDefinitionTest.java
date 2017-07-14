@@ -1,38 +1,32 @@
 package analysis;
 
 import static org.junit.Assert.*;
+import static test.PrivateMethodAndField.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
 
 import application.GeneralParameters;
 import weka.core.Attribute;
+import weka.core.Instances;
 
 public class AttributesDefinitionTest {
-	private int NUMBER_OF_ATTRIBUTES = 11;
-	private final int NUMBER_OF_SAMPLE_ATTRIBUTES = 5;
-	private AttributesDefinition testedClass;
-	private final String ATTRIBUTE_SET_FIELD_NAME = "attributeSet";
-	private Method testedPrivateMethod;
-
+	private Method testedMethod;
+	private Class<AttributesDefinition> testedClass = AttributesDefinition.class;
+	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 	}
 
 	@AfterClass
@@ -41,135 +35,52 @@ public class AttributesDefinitionTest {
 
 	@Before
 	public void setUp() throws Exception {
-		instantiateTestedClass();
-		testedPrivateMethod = null;
+		testedClass = AttributesDefinition.class;
+		testedMethod = null;
 	}
 
 	@After
 	public void tearDown() throws Exception {
 	}
 
-	private void instantiateTestedClass() {
-		testedClass = new AttributesDefinition();
-	}
+	@Test
+	public void attributeMapTest() throws Exception {
+		Map<Attribute, AttributeSupplier> attributeMap = AttributesDefinition.attributeMap();
 
-	@Test()
-	public void testConstructor() {
-		instantiateTestedClass();
+		assertEquals(GeneralParameters.NUMBER_OF_ATTRIBUTES, attributeMap.size());
 	}
 
 	@Test
-	public void testGetters() {
-		Set<Attribute> attributeSet = testedClass.getAttributeSet();
-		assertTrue(attributeSet.size() == NUMBER_OF_ATTRIBUTES);
-	}
-
-	@Test
-	public void testSetters()
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		HashSet<Attribute> testAttributeSet = initializeSampleAttributeSet();
-		testedClass.setAttributeSet(testAttributeSet);
-		Field attributeSetField = getPrivateFieldAndSetAccessible(testedClass, ATTRIBUTE_SET_FIELD_NAME);
-		assertTrue(theSameObjects(testAttributeSet, attributeSetField.get(testedClass)));
-	}
-
-	private boolean theSameObjects(Object object1, Object object2) {
-		return object1 == object2;
-	}
-
-	private Field getPrivateFieldAndSetAccessible(Object classInstance, String fieldName)
-			throws NoSuchFieldException, SecurityException {
-		Field field = classInstance.getClass().getDeclaredField(fieldName);
-		field.setAccessible(true);
-		return field;
-	}
-
-	private Method getPrivateMethodAndSetAccessible(Object classInstance, String methodName, Class<?>... parameterTypes)
-			throws NoSuchMethodException, SecurityException {
-		Method method = classInstance.getClass().getDeclaredMethod(methodName, parameterTypes);
-		method.setAccessible(true);
-		return method;
-	}
-
-	private HashSet<Attribute> initializeSampleAttributeSet() {
-		HashSet<Attribute> sampleAttributeSet = new HashSet<>();
-		for (int i = 1; i <= NUMBER_OF_SAMPLE_ATTRIBUTES; i++) {
-			sampleAttributeSet.add(new Attribute("sample test attribute " + i));
-		}
-		assertEquals(sampleAttributeSet.size(), NUMBER_OF_SAMPLE_ATTRIBUTES);
-		return sampleAttributeSet;
-	}
-
-	@Test
-	public void initializeAttributeSetTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
-		Method testedMethod = getPrivateMethodAndSetAccessible(testedClass, "initializeAttributeSet");
-		testedMethod.invoke(testedClass);
-		Field field = getPrivateFieldAndSetAccessible(testedClass, ATTRIBUTE_SET_FIELD_NAME);
+	public void readClassDatabaseTest() throws Exception {
+		testedMethod = AttributesDefinition.class.getDeclaredMethod("readClassDatabase");
+		testedMethod.setAccessible(true);
 		@SuppressWarnings("unchecked")
-		Set<Attribute> attributeSet = (Set<Attribute>) field.get(testedClass);
-		assertTrue(attributeSet.size()==NUMBER_OF_ATTRIBUTES);
+		List<String> classList = (List<String>) testedMethod.invoke(AttributesDefinition.class);
+
+		assertNotNull(classList);
+		assertFalse(classList.isEmpty());
 	}
 
 	@Test
-	public void putAttributeIntoSetTest() throws Exception {
-		
-		testedPrivateMethod = getPrivateMethodAndSetAccessible(testedClass, "putAttributeIntoSet", String.class, List.class);
-		
-		testAddingNumericValueToSet();
-		testAddingNominalValueToSet();
-	}
-	
-	private void testAddingNumericValueToSet() throws IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, NoSuchFieldException, SecurityException {
-		ArrayList<String> emptyList = new ArrayList<>();
-		HashSet<Attribute> attributeSet = initializeSampleAttributeSet();
-		Field attributeSetField = getPrivateFieldAndSetAccessible(testedClass, ATTRIBUTE_SET_FIELD_NAME);
-		attributeSetField.set(testedClass, attributeSet);
-		for (int i = 1; i <= NUMBER_OF_SAMPLE_ATTRIBUTES; i++) {
-			String attributeName = "sample attribute " + i;
-			testedPrivateMethod.invoke(testedClass, attributeName, emptyList);
-			Attribute newlyAddedAttribute = getNewNumericAttributeIfExistsInSet(attributeSet, attributeName);
-			assertTrue(newlyAddedAttribute.isNumeric());
-			assertEquals(NUMBER_OF_SAMPLE_ATTRIBUTES + i, attributeSet.size());
+	public void tiltPatternValuesTest() throws Exception {
+		testedMethod = AttributesDefinition.class.getDeclaredMethod("tiltPatternValues");
+		testedMethod.setAccessible(true);
+		@SuppressWarnings("unchecked")
+		List<String> resultTiltPatternList = (ArrayList<String>) testedMethod.invoke(AttributesDefinition.class);
+
+		assertEquals(GeneralParameters.NUMBER_OF_TILT_PATTERNS, resultTiltPatternList.size());
+
+		for (int i = 1; i <= GeneralParameters.NUMBER_OF_TILT_PATTERNS; i++) {
+			assertEquals(resultTiltPatternList.get(i - 1), i + "");
 		}
 	}
 
-	private Attribute getNewNumericAttributeIfExistsInSet(HashSet<Attribute> attributeSet, String newAttributeName) {
-		Iterator<Attribute> attributeSetIterator = attributeSet.iterator();
-		while(attributeSetIterator.hasNext()) {
-			Attribute attribute = attributeSetIterator.next();
-			if(attribute.name().equals(newAttributeName)) {
-				return attribute;
-			}
-		}
-		return null;
-	}
-	
-	private void testAddingNominalValueToSet() throws Exception {
-		List<String> sampleAttributeValuesList = Arrays.asList("nominal value 1", "nominal value 2");
-		HashSet<Attribute> attributeSet = initializeSampleAttributeSet();
-		Field attributeSetField = getPrivateFieldAndSetAccessible(testedClass, ATTRIBUTE_SET_FIELD_NAME);
-		attributeSetField.set(testedClass, attributeSet);
-		for (int i = 1; i <= NUMBER_OF_SAMPLE_ATTRIBUTES; i++) {
-			String attributeName = "sample attribute " + i;
-			testedPrivateMethod.invoke(testedClass, attributeName, sampleAttributeValuesList);
-			Attribute newlyAddedAttribute = getNewNumericAttributeIfExistsInSet(attributeSet, attributeName);
-			assertTrue(newlyAddedAttribute.isNominal());
-			assertEquals(NUMBER_OF_SAMPLE_ATTRIBUTES + i, attributeSet.size());
-		}
-	}
-
-	@SuppressWarnings("unchecked")
 	@Test
-	public void readAttributeValuesTest() throws Exception {
-		Method testedMethod = getPrivateMethodAndSetAccessible(testedClass, "readAttributeValues", File.class);
-		
-		List<String> resultList = (List<String>) testedMethod.invoke(testedClass, new File(AttributesDefinition.ATTRIBUTES_FOLDER_PATH + "tilt pattern"));
-		assertEquals(resultList.size(), GeneralParameters.NUMBER_OF_TILT_PATTERNS);
-		
-		resultList = (List<String>) testedMethod.invoke(testedClass, new File(AttributesDefinition.ATTRIBUTES_FOLDER_PATH + "edge points"));
-		assertEquals(resultList.size(), 0);
+	public void getInstancesTest() {
+		Instances result = AttributesDefinition.getInstances();
+		assertEquals(GeneralParameters.NUMBER_OF_ATTRIBUTES, result.numAttributes());
+		assertEquals(result.classIndex(), result.numAttributes() - 1);
+		assertEquals(result.relationName(), AttributesDefinition.RELATION_NAME);
+		assertTrue(result.classAttribute().name().equals(AttributesDefinition.SIGNATURE_OWNER));
 	}
-
 }

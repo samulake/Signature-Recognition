@@ -1,25 +1,25 @@
-@relation signature
+@relation 'signature ownership'
 
 @attribute 'height to width ratio' numeric
 @attribute 'horizontal histogram max value' numeric
-@attribute 'the highest pixel x coordinate' numeric
 @attribute 'tilt pattern' {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
+@attribute 'lowest pixel' numeric
 @attribute 'horizontal center' numeric
 @attribute 'signature area' numeric
+@attribute 'highest pixel' numeric
 @attribute 'vertical center' numeric
-@attribute 'the lowest pixel x coordinate' numeric
 @attribute 'edge points' numeric
 @attribute 'vertical histogram max value' numeric
 @attribute 'signature owner' {'Eryk Samulak illegible','Eryk Samulak legible','Konrad Sza³ankiewicz legible','Konrad Sza³ankiewicz illegible','Marcin Lipiñski','Jakub Wawrzyniak','Jan Kowalski legible','Jan Kowalski illegible'}
 
 @data
-21,2.608938,108,9,207,1722,115,134,152,94,'Eryk Samulak illegible'
-5,0.484211,102,16,50,1199,8,85,87,93,'Eryk Samulak illegible'
-8,0.54359,80,14,60,778,28,181,65,79,'Eryk Samulak illegible'
-31,0.125,95,1,20,481,188,4,22,113,'Eryk Samulak illegible'
-8,0.56044,102,10,73,966,71,179,96,176,'Eryk Samulak illegible'
-38,0.238342,96,9,24,535,35,154,29,5,'Eryk Samulak illegible'
-56,0.202073,98,10,23,641,123,29,27,178,'Eryk Samulak illegible'
-25,0.341969,89,14,40,1053,129,57,39,140,'Eryk Samulak illegible'
-7,0.549738,83,1,61,749,102,85,78,97,'Eryk Samulak illegible'
-22,0.447917,97,9,46,1042,73,23,51,92,'Eryk Samulak illegible'
+2.608938,94,9,115,108,1722,134,207,21,152,'Eryk Samulak illegible'
+0.484211,93,16,8,102,1199,85,50,5,87,'Eryk Samulak illegible'
+0.54359,79,14,28,80,778,181,60,8,65,'Eryk Samulak illegible'
+0.125,113,1,188,95,481,4,20,31,22,'Eryk Samulak illegible'
+0.56044,176,10,71,102,966,179,73,8,96,'Eryk Samulak illegible'
+0.238342,5,9,35,96,535,154,24,38,29,'Eryk Samulak illegible'
+0.202073,178,10,123,98,641,29,23,56,27,'Eryk Samulak illegible'
+0.341969,140,14,129,89,1053,57,40,25,39,'Eryk Samulak illegible'
+0.549738,97,1,102,83,749,85,61,7,78,'Eryk Samulak illegible'
+0.447917,92,9,73,97,1042,23,46,22,51,'Eryk Samulak illegible'
