@@ -25,7 +25,7 @@ public class SignatureImageUtils {
         return histogram;
     }
     
-    public static int getHistogramMaxValue(int [] histogram) {
+    private static int getHistogramMaxValue(int [] histogram) {
     	int max = 0;
     	for(int i = 1; i < histogram.length; i++) {
     		if(histogram[max] <= histogram[i]) {
@@ -34,7 +34,15 @@ public class SignatureImageUtils {
     	}
     	return max;
     }
+    
+    public static double getHorizontalHistogramMaxValue(Mat binaryImage) {
+    	return getHistogramMaxValue(getHorizontalHistogram(binaryImage));
+    }
 
+    public static double getVerticalHistogramMaxValue(Mat binaryImage) {
+    	return getHistogramMaxValue(getVerticalHistogram(binaryImage));
+    }
+    
     public static int[] getVerticalHistogram(Mat input) {
         int histogram[] = new int[input.height()];
         Arrays.fill(histogram, 0);
@@ -48,9 +56,11 @@ public class SignatureImageUtils {
         return histogram;
     }
     
-    
+    public static double getSignatureArea(Mat binaryImage) {
+    	return countBlackPixels(binaryImage);
+    }
 
-    public static int getHorizontalCenter(Mat input){
+    public static double getHorizontalCenter(Mat input){
 
         int[] horizontalHistogram = getHorizontalHistogram(input);
         int weight = 0;
@@ -63,7 +73,7 @@ public class SignatureImageUtils {
         return sumOfPixels == 0 ? 0 : Math.round(weight/sumOfPixels);
     }
 
-    public static int getVerticalCenter(Mat input){
+    public static double getVerticalCenter(Mat input){
 
         int[] verticalHistogram = getVerticalHistogram(input);
         int weight = 0;
@@ -76,7 +86,7 @@ public class SignatureImageUtils {
         return sumOfPixels == 0 ? 0 : Math.round(weight/sumOfPixels);
     }
 
-    public static int getEdgePointNumber(Mat input) {
+    public static double getEdgePointNumber(Mat input) {
         int edgePointNumber = 0;
         for (int rowIndex = 0; rowIndex < input.height(); rowIndex++) {
             for (int colIndex = 0; colIndex < input.width(); colIndex++) {
@@ -127,19 +137,19 @@ public class SignatureImageUtils {
         return pixel[0] == blackValue;
     }
     
-    public static int getSignatureTilt(Mat img) {
-		int[] tilt = { 0, img.height() * img.width() };
+    public static double getSignatureTilt(Mat binaryImage) {
+		int[] tilt = { 0, binaryImage.height() * binaryImage.width() };
 		Mat element = Mat.zeros(10, 10, CvType.CV_8U);
 		for (int i = 1; i <= 16; i++) {
 			element.put(0, 0, getPattern(i));
 			Mat pimg = new Mat();
-			Imgproc.erode(img, pimg, element);
+			Imgproc.erode(binaryImage, pimg, element);
 			if (countBlackPixels(pimg) < tilt[1]) {
 				tilt[0] = i;
 				tilt[1] = countBlackPixels(pimg);
 			}
 		}
-		return tilt[0];
+		return tilt[0]-1;
 	}
 
 	private static double[] getPattern(int i) {
@@ -262,6 +272,14 @@ public class SignatureImageUtils {
 
 		return p;
 	}
+	
+	public static double getHighestPixelXCoordinate(Mat binaryImage) {
+		return getHighestBlackPixel(binaryImage).x;
+	}
+	
+	public static double getLowestPixelXCoordinate(Mat binaryImage) {
+		return getLowestBlackPixel(binaryImage).x;
+	}
 
 	public static Point getLowestBlackPixel(Mat image) {
 		double[] pixel = null;
@@ -353,7 +371,7 @@ public class SignatureImageUtils {
 	}
 	
 	
-	public static float getHeightWidthRatio(Mat image) {
+	public static double getHeightWidthRatio(Mat image) {
 		return (float) (getLowestBlackPixel(image).y - getHighestBlackPixel(image).y) / (float) (getRightestBlackPixel(image).x - getLeftestBlackPixel(image).x);
 	}
 }
